@@ -1,0 +1,29 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    text-align: center;
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px;
+}
+
+#flota, #despacho {
+    margin: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+form {
+    display: flex;
+    align-items: center;
+}
+
+label, select, button {
+    margin: 5px;
+}

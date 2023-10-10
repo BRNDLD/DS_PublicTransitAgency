@@ -1,0 +1,10 @@
+{
+    "buses_disponibles": [
+        {"nombre": "Bus 1", "estado": "Disponible"},
+        {"nombre": "Bus 2", "estado": "Disponible"}
+    ],
+    "buses_mantenimiento": [
+        {"nombre": "Bus 3", "estado": "Mantenimiento"},
+        {"nombre": "Bus 4", "estado": "Mantenimiento"}
+    ]
+}

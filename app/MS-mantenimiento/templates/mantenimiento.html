@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href= "/app/MS-mantenimiento/static/styles.css">
+    <title>Buses Disponibles</title>
+</head>
+<body>
+    <div id="header">
+        <h1>Buses Disponibles</h1>
+    </div>
+
+    <div id="tabla-disponibles">
+        <h2>Buses Disponibles</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre del Bus</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bus in buses_disponibles %}
+                    <tr>
+                        <td>{{ bus["nombre"] }}</td>
+                        <td>{{ bus["estado"] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="tabla-mantenimiento">
+        <h2>Buses en Mantenimiento</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre del Bus</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bus in buses_mantenimiento %}
+                    <tr>
+                        <td>{{ bus["nombre"] }}</td>
+                        <td>{{ bus["estado"] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
