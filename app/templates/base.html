@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>PTAGENCY</title>
+    <style>
+        body {
+            background-color: orange; /* Color de fondo naranja */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        .logo {
+            margin: 0;
+        }
+
+        .logo img {
+            width: 50px; /* Ancho de la imagen del logotipo (ajustar según tu preferencia) */
+            height: auto;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: orange; /* Color de fondo naranja */
+            color: black; /* Texto en negro */
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+
+        .login-button {
+            background-color: black; /* Color de fondo negro */
+            color: orange; /* Texto en naranja */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="logo">
+            <a href="{{ url_for('home') }}" style="text-decoration: none;">
+                <img src="{{ url_for('static', filename='logotipo.png') }}" alt="Logo">
+            </a>
+        </h1>
+        <div class="buttons">
+            <a href="{{ url_for('login') }}" class="button login-button">Iniciar Sesión</a>
+            <a href="{{ url_for('signup') }}" class="button">Registrarse</a>
+        </div>
+    </div>
+    {% block content %}{% endblock %}
+</body>
+</html>
