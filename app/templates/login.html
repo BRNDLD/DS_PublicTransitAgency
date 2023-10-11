@@ -8,6 +8,9 @@
             <input type="text" name="code" placeholder="Código (solo para administradores)">
             <button type="submit">Iniciar Sesión</button>
         </form>
+        {% if error %}
+        <p>{{ error }}</p>
+        {% endif %}
     </div>
     <style>
         .content {
