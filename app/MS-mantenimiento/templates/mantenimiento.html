@@ -3,17 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href= "/app/MS-mantenimiento/static/styles.css">
     <title>Buses Disponibles</title>
+    <style>
+        /* Establece una imagen de fondo que representa un autobús naranja y blanco */
+        body {
+            background-image: url('ruta/a/tu/imagen.jpg');
+            background-size: cover; /* Ajusta la imagen al tamaño del cuerpo */
+            background-repeat: no-repeat; /* Evita que se repita la imagen */
+        }
+
+        /* Estilo para el contenido sobre el fondo */
+        #content {
+            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con transparencia */
+            padding: 20px;
+        }
+
+        /* Estilo para el encabezado */
+        #header {
+            background-color: #FFA500;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #fff;
+        }
+
+        /* Estilo para la tabla */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+
+        /* Estilo para el formulario */
+        #formulario {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <div id="header">
         <h1>Buses Disponibles</h1>
     </div>
 
-    <div id="tabla-disponibles">
+    <div id="content">
         <h2>Buses Disponibles</h2>
-        <table>
+        <table id="tabla-disponibles">
             <thead>
                 <tr>
                     <th>Nombre del Bus</th>
@@ -21,34 +62,59 @@
                 </tr>
             </thead>
             <tbody>
-                {% for bus in buses_disponibles %}
-                    <tr>
-                        <td>{{ bus["nombre"] }}</td>
-                        <td>{{ bus["estado"] }}</td>
-                    </tr>
-                {% endfor %}
+                <!-- Filas de datos se agregarán aquí -->
             </tbody>
         </table>
+        
+        <h2>Buses en Mantenimiento</h2>
+        <table id="tabla-mantenimiento">
+            <thead>
+                <tr>
+                    <th>Nombre del Bus</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Filas de datos se agregarán aquí -->
+            </tbody>
+        </table>
+
+        <div id="formulario">
+            <h3>Insertar Nuevo Bus</h3>
+            <form id="form-bus">
+                <input type="text" id="placa-bus" placeholder="Placa del Bus">
+                <select id="estado-bus">
+                    <option value="activo">Activo</option>
+                    <option value="mantenimiento">Mantenimiento</option>
+                </select>
+                <button type="button" onclick="agregarFila()">Agregar Bus</button>
+            </form>
+        </div>
     </div>
 
-    <div id="tabla-mantenimiento">
-        <h2>Buses en Mantenimiento</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre del Bus</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for bus in buses_mantenimiento %}
-                    <tr>
-                        <td>{{ bus["nombre"] }}</td>
-                        <td>{{ bus["estado"] }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <script>
+        function agregarFila() {
+            var placaBus = document.getElementById("placa-bus").value;
+            var estadoBus = document.getElementById("estado-bus").value;
+
+            var table;
+            if (estadoBus === "activo") {
+                table = document.getElementById("tabla-disponibles").getElementsByTagName('tbody')[0];
+            } else if (estadoBus === "mantenimiento") {
+                table = document.getElementById("tabla-mantenimiento").getElementsByTagName('tbody')[0];
+            } else {
+                // Manejo de error si la opción seleccionada no es "activo" ni "mantenimiento"
+                return;
+            }
+
+            var newRow = table.insertRow(table.rows.length);
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+            cell1.innerHTML = placaBus;
+            cell2.innerHTML = estadoBus;
+
+            document.getElementById("form-bus").reset(); // Limpiar el formulario
+        }
+    </script>
 </body>
 </html>
