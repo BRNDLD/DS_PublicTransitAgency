@@ -1,29 +1,24 @@
+/* Estilo para el fondo en blanco */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
-}
-
-h1 {
-    text-align: center;
-    background-color: #007BFF;
-    color: #fff;
-    padding: 10px;
-}
-
-#flota, #despacho {
-    margin: 20px;
-    padding: 10px;
     background-color: #fff;
-    border: 1px solid #ddd;
 }
 
-form {
-    display: flex;
-    align-items: center;
+/* Estilo para el texto en negro */
+h1, p {
+    color: #000;
 }
 
-label, select, button {
-    margin: 5px;
+/* Estilo para resaltar en naranja */
+a, button {
+    background-color: #FFA500;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+/* Estilo de enlace naranja al pasar el mouse */
+a:hover {
+    background-color: #FF6347;
 }
