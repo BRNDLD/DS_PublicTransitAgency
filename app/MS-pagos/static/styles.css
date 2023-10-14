@@ -1,0 +1,9 @@
+/* Estilo personalizado */
+.container {
+    margin-top: 50px;
+}
+
+#respuestaPago {
+    font-weight: bold;
+    margin-top: 20px;
+}
