@@ -1,26 +1,27 @@
 [
     {
-        "placa": "002",
-        "estado": "activo"
+        "placa": "123",
+        "estado": "activo",
+        "tipo": "bus"
     },
     {
-        "placa": "003",
-        "estado": "activo"
-    },
-    {
-        "placa": "012",
-        "estado": "mantenimiento"
-    },
-    {
-        "placa": "001",
-        "estado": "mantenimiento"
+        "placa": "011",
+        "estado": "mantenimiento",
+        "tipo": "tren"
     },
     {
         "placa": "321",
-        "estado": "mantenimiento"
+        "estado": "activo",
+        "tipo": "bus"
     },
     {
-        "placa": "456",
-        "estado": "activo"
+        "placa": "435",
+        "estado": "activo",
+        "tipo": "tren"
+    },
+    {
+        "placa": "098",
+        "estado": "mantenimiento",
+        "tipo": "privado"
     }
 ]

@@ -34,6 +34,7 @@ def cambiar_estado(placa):
 def agregar_vehiculo():
     placa = request.form['placa']
     estado = request.form['estado']
+    tipo = request.form['tipo']  # Obtén el valor del campo "tipo de vehículo"
 
     # Validar que la placa sea única
     placas_existentes = [vehiculo['placa'] for vehiculo in vehiculos]
@@ -42,7 +43,8 @@ def agregar_vehiculo():
     else:
         nuevo_vehiculo = {
             'placa': placa,
-            'estado': estado
+            'estado': estado,
+            'tipo': tipo  # Agrega el atributo "tipo de vehículo"
         }
         vehiculos.append(nuevo_vehiculo)
 
