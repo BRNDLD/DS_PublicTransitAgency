@@ -1,24 +1,40 @@
-/* Estilo para el fondo en blanco */
-body {
-    background-color: #fff;
+/* Estilo para el título */
+h1 {
+    text-align: center;
+    color: orange;
 }
 
-/* Estilo para el texto en negro */
-h1, p {
-    color: #000;
+/* Estilo para las tablas */
+table {
+    margin: 0 auto;
+    border-collapse: collapse;
+    width: 80%; /* Ajusta el ancho de la tabla según tu preferencia */
 }
 
-/* Estilo para resaltar en naranja */
-a, button {
-    background-color: #FFA500;
-    color: #fff;
-    padding: 10px 20px;
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+/* Estilo para las celdas de estado */
+td:nth-child(2) {
+    color: orange;
+}
+
+/* Estilo para los botones de cambiar estado */
+button {
+    background-color: orange;
+    color: white;
     border: none;
-    border-radius: 5px;
-    text-decoration: none;
+    padding: 5px 10px;
+    cursor: pointer;
 }
 
-/* Estilo de enlace naranja al pasar el mouse */
-a:hover {
-    background-color: #FF6347;
+button:hover {
+    background-color: white;
+    color: orange;
 }
