@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def mostrar_tablas():
-    return render_template('transacciones.html', datos=obtener_transacciones)
+    return render_template('transacciones.html', datos=obtener_transacciones())
 
 # Ruta para realizar un pago
 @app.route('/realizar_pago', methods=['POST'])
@@ -51,7 +51,7 @@ def obtener_transacciones():
     with open('transacciones.json', 'r') as file:
         transacciones = json.load(file)
 
-    return jsonify(transacciones)
+    return transacciones
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

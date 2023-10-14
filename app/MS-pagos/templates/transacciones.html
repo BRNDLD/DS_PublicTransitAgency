@@ -22,10 +22,15 @@
             </div>
             <button type="submit" class="btn btn-primary">Realizar Pago</button>
         </form>
-
+    
         <hr>
-
-        <h2>Último Pago:</h2>
+    
+        <h2>Últimos Pagos:</h2>
+        <ul id="ultimosPagos">
+            {% for pago in datos %}
+            <li>Tarjeta: {{ pago.tarjeta }}, Monto: {{ pago.monto }}</li>
+            {% endfor %}
+        </ul>
         <div id="respuestaPago"></div>
     </div>
 
