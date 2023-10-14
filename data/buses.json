@@ -1,11 +1,14 @@
-{
-    "buses_disponibles": [
-      {"placa": "Bus 13", "estado": "Disponible"},
-      {"placa": "Bus 2", "estado": "Disponible"}
-    ],
-    "buses_mantenimiento": [
-      {"placa": "Bus 3", "estado": "Mantenimiento"},
-      {"placa": "Bus 4", "estado": "Mantenimiento"}
-    ]
-  }
-  
+[
+    {
+        "placa": "001",
+        "estado": "activo"
+    },
+    {
+        "placa": "002",
+        "estado": "activo"
+    },
+    {
+        "placa": "003",
+        "estado": "activo"
+    }
+]

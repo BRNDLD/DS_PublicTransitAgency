@@ -1,120 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buses Disponibles</title>
-    <style>
-        /* Establece una imagen de fondo que representa un autobús naranja y blanco */
-        body {
-            background-image: url('ruta/a/tu/imagen.jpg');
-            background-size: cover; /* Ajusta la imagen al tamaño del cuerpo */
-            background-repeat: no-repeat; /* Evita que se repita la imagen */
-        }
-
-        /* Estilo para el contenido sobre el fondo */
-        #content {
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con transparencia */
-            padding: 20px;
-        }
-
-        /* Estilo para el encabezado */
-        #header {
-            background-color: #FFA500;
-            text-align: center;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #fff;
-        }
-
-        /* Estilo para la tabla */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: center;
-        }
-
-        /* Estilo para el formulario */
-        #formulario {
-            text-align: center;
-        }
-    </style>
+    <title>Tabla de Estados de Vehículos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div id="header">
-        <h1>Buses Disponibles</h1>
-    </div>
-
-    <div id="content">
-        <h2>Buses Disponibles</h2>
-        <table id="tabla-disponibles">
-            <thead>
+    <h1>Vehículos Activos</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Número de Placa</th>
+                <th>Estado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody id="active-vehicles">
+            {% for vehiculo in datos if vehiculo.estado == 'activo' %}
                 <tr>
-                    <th>Nombre del Bus</th>
-                    <th>Estado</th>
+                    <td>{{ vehiculo.placa }}</td>
+                    <td>{{ vehiculo.estado }}</td>
+                    <td>
+                        <form action="/cambiar_estado/{{ vehiculo.placa }}" method="post">
+                            <select name="nuevo_estado">
+                                <option value="activo">Activo</option>
+                                <option value="mantenimiento">Mantenimiento</option>
+                            </select>
+                            <button type="submit">Cambiar Estado</button>
+                        </form>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <!-- Filas de datos se agregarán aquí -->
-            </tbody>
-        </table>
-        
-        <h2>Buses en Mantenimiento</h2>
-        <table id="tabla-mantenimiento">
-            <thead>
-                <tr>
-                    <th>Nombre del Bus</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Filas de datos se agregarán aquí -->
-            </tbody>
-        </table>
+            {% endfor %}
+        </tbody>
+    </table>
 
-        <div id="formulario">
-            <h3>Insertar Nuevo Bus</h3>
-            <form id="form-bus">
-                <input type="text" id="placa-bus" placeholder="Placa del Bus">
-                <select id="estado-bus">
-                    <option value="activo">Activo</option>
-                    <option value="mantenimiento">Mantenimiento</option>
-                </select>
-                <button type="button" onclick="agregarFila()">Agregar Bus</button>
-            </form>
-        </div>
-    </div>
+    <h1>Vehículos en Mantenimiento</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Número de Placa</th>
+                <th>Estado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody id="maintenance-vehicles">
+            {% for vehiculo in datos if vehiculo.estado == 'mantenimiento' %}
+                <tr>
+                    <td>{{ vehiculo.placa }}</td>
+                    <td>{{ vehiculo.estado }}</td>
+                    <td>
+                        <form action="/cambiar_estado/{{ vehiculo.placa }}" method="post">
+                            <select name="nuevo_estado">
+                                <option value="activo">Activo</option>
+                                <option value="mantenimiento">Mantenimiento</option>
+                            </select>
+                            <button type="submit">Cambiar Estado</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
     <script>
-        function agregarFila() {
-            var placaBus = document.getElementById("placa-bus").value;
-            var estadoBus = document.getElementById("estado-bus").value;
+        document.addEventListener('DOMContentLoaded', function () {
+            const cambiarEstadoForms = document.querySelectorAll('form[action^="/cambiar_estado/"]');
+            cambiarEstadoForms.forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    const placa = this.getAttribute('action').replace('/cambiar_estado/', '');
+                    const nuevoEstado = this.querySelector('select[name="nuevo_estado"]').value;
 
-            var table;
-            if (estadoBus === "activo") {
-                table = document.getElementById("tabla-disponibles").getElementsByTagName('tbody')[0];
-            } else if (estadoBus === "mantenimiento") {
-                table = document.getElementById("tabla-mantenimiento").getElementsByTagName('tbody')[0];
-            } else {
-                // Manejo de error si la opción seleccionada no es "activo" ni "mantenimiento"
-                return;
-            }
-
-            var newRow = table.insertRow(table.rows.length);
-            var cell1 = newRow.insertCell(0);
-            var cell2 = newRow.insertCell(1);
-            cell1.innerHTML = placaBus;
-            cell2.innerHTML = estadoBus;
-
-            document.getElementById("form-bus").reset(); // Limpiar el formulario
-        }
+                    // Realizar una solicitud POST al servidor para cambiar el estado
+                    fetch('/cambiar_estado/' + placa, {
+                        method: 'POST',
+                        body: JSON.stringify({ nuevo_estado: nuevoEstado }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                        .then(function (response) {
+                            if (response.ok) {
+                                return response.json();
+                            } else {
+                                throw new Error('Error al cambiar el estado');
+                            }
+                        })
+                        .then(function (data) {
+                            // Redirigir la página para que se refresque con los datos actualizados
+                            window.location.reload();
+                        })
+                        .catch(function (error) {
+                            console.error('Error:', error);
+                        });
+                });
+            });
+        });
     </script>
 </body>
 </html>
