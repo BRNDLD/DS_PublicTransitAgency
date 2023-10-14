@@ -61,6 +61,19 @@
         </tbody>
     </table>
 
+    <!-- Formulario para agregar vehículos -->
+    <h1>Agregar Vehículo</h1>
+    <form action="/agregar_vehiculo" method="post">
+        <label for="placa">Número de Placa (3 dígitos):</label>
+        <input type="text" name="placa" required pattern="[0-9]{3}" title="Debe tener 3 dígitos">
+        <label for="estado">Estado:</label>
+        <select name="estado">
+            <option value="activo">Activo</option>
+            <option value="mantenimiento">Mantenimiento</option>
+        </select>
+        <button type="submit">Agregar Vehículo</button>
+    </form>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const cambiarEstadoForms = document.querySelectorAll('form[action^="/cambiar_estado/"]');
@@ -82,7 +95,7 @@
                             if (response.ok) {
                                 return response.json();
                             } else {
-                                throw new Error('Error al cambiar el estado');
+                                throw Error('Error al cambiar el estado');
                             }
                         })
                         .then(function (data) {

@@ -1,14 +1,26 @@
 [
     {
-        "placa": "001",
-        "estado": "activo"
-    },
-    {
         "placa": "002",
         "estado": "activo"
     },
     {
         "placa": "003",
+        "estado": "activo"
+    },
+    {
+        "placa": "012",
+        "estado": "mantenimiento"
+    },
+    {
+        "placa": "001",
+        "estado": "mantenimiento"
+    },
+    {
+        "placa": "321",
+        "estado": "mantenimiento"
+    },
+    {
+        "placa": "456",
         "estado": "activo"
     }
 ]
