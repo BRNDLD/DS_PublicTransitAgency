@@ -50,7 +50,8 @@ def login():
 @app.route('/usuario')
 def usuario():
     if 'username' in session:
-        return "Página de usuario"
+        username = session['username']  # Obtén el nombre de usuario de la sesión
+        return render_template('panelUsuario.html', user_name=username)
     else:
         return redirect(url_for('login'))
 
