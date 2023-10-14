@@ -9,7 +9,7 @@
     },
     {
         "placa": "012",
-        "estado": "mantenimiento"
+        "estado": "activo"
     },
     {
         "placa": "001",
@@ -22,5 +22,9 @@
     {
         "placa": "456",
         "estado": "activo"
+    },
+    {
+        "placa": "123",
+        "estado": "mantenimiento"
     }
 ]
