@@ -1,22 +1,27 @@
 from flask import Flask, flash, render_template, jsonify, request, redirect
-import json
+import json, os
 
-app = Flask(__name__)
+mantenimiento = Flask(__name__)
+
+# Obtén el directorio raíz actual (donde se ejecuta el script)
+directorio_raiz = os.getcwd()
+
+print("Directorio Raíz:", directorio_raiz)
 
 # Configurar la clave secreta
-app.secret_key = '001'  # Reemplaza 'tu_clave_secreta_aqui' con una cadena segura
+mantenimiento.secret_key = '001'  # Reemplaza 'tu_clave_secreta_aqui' con una cadena segura
 
 # Leer datos de vehículos desde un archivoJSON
 with open('data/buses.json', 'r') as vehiculos_file:
     vehiculos = json.load(vehiculos_file)
 
 # Ruta para cargar la página HTML
-@app.route('/')
+@mantenimiento.route('/')
 def mostrar_tablas():
     return render_template('mantenimiento.html', datos=vehiculos)
 
 # Ruta para cambiar el estado de un vehículo
-@app.route('/cambiar_estado/<placa>', methods=['POST'])
+@mantenimiento.route('/cambiar_estado/<placa>', methods=['POST'])
 def cambiar_estado(placa):
     nuevo_estado = request.json['nuevo_estado']
 
@@ -30,7 +35,7 @@ def cambiar_estado(placa):
     return jsonify({'nuevo_estado': nuevo_estado})
 
 # Ruta y formulario para agregar vehículos
-@app.route('/agregar_vehiculo', methods=['POST'])
+@mantenimiento.route('/agregar_vehiculo', methods=['POST'])
 def agregar_vehiculo():
     placa = request.form['placa']
     estado = request.form['estado']
@@ -54,4 +59,4 @@ def agregar_vehiculo():
     return redirect('/')
 
 if __name__ == '__main__':
-    app.run()
+    mantenimiento.run()
