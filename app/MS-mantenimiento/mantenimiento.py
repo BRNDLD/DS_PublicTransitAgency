@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Configurar la clave secreta
 app.secret_key = '001'  # Reemplaza 'tu_clave_secreta_aqui' con una cadena segura
 
-# Leer datos de vehículos desde un archivo JSON
+# Leer datos de vehículos desde un archivoJSON
 with open('data/buses.json', 'r') as vehiculos_file:
     vehiculos = json.load(vehiculos_file)
 
