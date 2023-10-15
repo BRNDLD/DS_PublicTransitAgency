@@ -23,5 +23,10 @@
         "placa": "098",
         "estado": "mantenimiento",
         "tipo": "privado"
+    },
+    {
+        "placa": "111",
+        "estado": "activo",
+        "tipo": "adaptado"
     }
 ]

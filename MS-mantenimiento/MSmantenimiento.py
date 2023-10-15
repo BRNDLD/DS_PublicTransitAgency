@@ -43,6 +43,8 @@ def agregar_vehiculo():
     placas_existentes = [vehiculo['placa'] for vehiculo in vehiculos]
     if placa in placas_existentes:
         flash('La placa ya existe. Introduce una placa única.', 'error')
+    elif len(placa) != 3:
+        flash('La placa debe tener exactamente 3 dígitos.', 'error')
     else:
         nuevo_vehiculo = {
             'placa': placa,
