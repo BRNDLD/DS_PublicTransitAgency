@@ -12,7 +12,7 @@ print("Directorio Raíz:", directorio_raiz)
 mantenimiento.secret_key = '001'  # Reemplaza 'tu_clave_secreta_aqui' con una cadena segura
 
 # Leer datos de vehículos desde un archivoJSON
-with open('data/buses.json', 'r') as vehiculos_file:
+with open('buses.json', 'r') as vehiculos_file:
     vehiculos = json.load(vehiculos_file)
 
 # Ruta para cargar la página HTML
