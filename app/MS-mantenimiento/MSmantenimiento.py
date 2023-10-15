@@ -1,19 +1,17 @@
 from flask import Flask, flash, render_template, jsonify, request, redirect
-import json, os
+import json
 
 mantenimiento = Flask(__name__)
 
-# Obtén el directorio raíz actual (donde se ejecuta el script)
-directorio_raiz = os.getcwd()
+# Define la ruta completa al archivo 'buses.json'
+ruta_json = 'C:/Users/sever/OneDrive/Escritorio/DS_PublicTransitAgency/DS_PublicTransitAgency/app/MS-mantenimiento/buses.json'
 
-print("Directorio Raíz:", directorio_raiz)
+# Leer datos de vehículos desde el archivo JSON
+with open(ruta_json, 'r') as vehiculos_file:
+    vehiculos = json.load(vehiculos_file)
 
 # Configurar la clave secreta
 mantenimiento.secret_key = '001'  # Reemplaza 'tu_clave_secreta_aqui' con una cadena segura
-
-# Leer datos de vehículos desde un archivoJSON
-with open('buses.json', 'r') as vehiculos_file:
-    vehiculos = json.load(vehiculos_file)
 
 # Ruta para cargar la página HTML
 @mantenimiento.route('/')
@@ -29,7 +27,7 @@ def cambiar_estado(placa):
         if vehiculo['placa'] == placa:
             vehiculo['estado'] = nuevo_estado
 
-    with open('data/buses.json', 'w') as vehiculos_file:
+    with open(ruta_json, 'w') as vehiculos_file:
         json.dump(vehiculos, vehiculos_file, indent=4)
 
     return jsonify({'nuevo_estado': nuevo_estado})
@@ -53,7 +51,7 @@ def agregar_vehiculo():
         }
         vehiculos.append(nuevo_vehiculo)
 
-        with open('buses.json', 'w') as vehiculos_file:
+        with open(ruta_json, 'w') as vehiculos_file:
             json.dump(vehiculos, vehiculos_file, indent=4)
 
     return redirect('/')
