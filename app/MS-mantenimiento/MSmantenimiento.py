@@ -53,7 +53,7 @@ def agregar_vehiculo():
         }
         vehiculos.append(nuevo_vehiculo)
 
-        with open('data/buses.json', 'w') as vehiculos_file:
+        with open('buses.json', 'w') as vehiculos_file:
             json.dump(vehiculos, vehiculos_file, indent=4)
 
     return redirect('/')
