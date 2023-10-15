@@ -1,10 +1,10 @@
 from flask import Flask, flash, render_template, jsonify, request, redirect
-import json
+import json, os
 
 mantenimiento = Flask(__name__)
 
-# Define la ruta completa al archivo 'buses.json'
-ruta_json = 'app/MS-mantenimiento/buses.json'
+# Define la ruta completa al archivo 'buses.json' en Render
+ruta_json = os.path.join(os.path.dirname(__file__), 'buses.json')
 
 # Leer datos de vehículos desde el archivo JSON
 with open(ruta_json, 'r') as vehiculos_file:
