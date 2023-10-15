@@ -1,8 +1,10 @@
 import json
 from flask import Flask, jsonify, render_template, request
+import os
 
 app = Flask(__name__)
 
+# Ruta para mostrar tablas
 @app.route('/')
 def mostrar_tablas():
     return render_template('transacciones.html', datos=obtener_transacciones())
@@ -32,10 +34,19 @@ def realizar_pago():
 def simular_pasarela_de_pago(tarjeta, monto):
     return True  
 
+def obtener_transacciones():
+    transacciones = []
+
+    # Verificar si el archivo "transacciones.json" existe
+    if os.path.exists('transacciones.json'):
+        # Cargar transacciones existentes desde el archivo JSON
+        with open('transacciones.json', 'r') as file:
+            transacciones = json.load(file)
+
+    return transacciones
+
 def registrar_transaccion(tarjeta, monto):
-    # Cargar transacciones existentes desde el archivo JSON
-    with open('transacciones.json', 'r') as file:
-        transacciones = json.load(file)
+    transacciones = obtener_transacciones()
 
     # Agregar la nueva transacción
     nueva_transaccion = {'tarjeta': tarjeta, 'monto': monto}
@@ -44,14 +55,6 @@ def registrar_transaccion(tarjeta, monto):
     # Guardar las transacciones actualizadas en el archivo JSON
     with open('transacciones.json', 'w') as file:
         json.dump(transacciones, file, indent=4)
-
-@app.route('/transacciones', methods=['GET'])
-def obtener_transacciones():
-    # Leer las transacciones desde el archivo JSON
-    with open('transacciones.json', 'r') as file:
-        transacciones = json.load(file)
-
-    return transacciones
 
 if __name__ == '__main__':
     app.run(debug=True)
