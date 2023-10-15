@@ -4,7 +4,7 @@ import json
 mantenimiento = Flask(__name__)
 
 # Define la ruta completa al archivo 'buses.json'
-ruta_json = 'C:/Users/sever/OneDrive/Escritorio/DS_PublicTransitAgency/DS_PublicTransitAgency/app/MS-mantenimiento/buses.json'
+ruta_json = 'app/MS-mantenimiento/buses.json'
 
 # Leer datos de vehículos desde el archivo JSON
 with open(ruta_json, 'r') as vehiculos_file:
