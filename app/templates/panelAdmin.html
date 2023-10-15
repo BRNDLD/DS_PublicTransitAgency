@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>PTAGENCY - Administrador</title>
+    <style>
+        body {
+            background-color: orange; /* Color de fondo naranja */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        .logo {
+            margin: 0;
+        }
+
+        .logo img {
+            width: 50px; /* Ancho de la imagen del logotipo (ajustar según tu preferencia) */
+            height: auto;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center; /* Centra los botones horizontalmente */
+            align-items: center; /* Centra los botones verticalmente */
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: orange; /* Color de fondo naranja */
+            color: black; /* Texto en negro */
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+
+        .login-button {
+            background-color: black; /* Color de fondo negro */
+            color: orange; /* Texto en naranja */
+        }
+
+        .logout-button {
+            background-color: black; /* Color de fondo negro */
+            color: orange; /* Texto en naranja */
+        }
+
+        .dropdown {
+            position: absolute; /* Cambiado a posición absoluta */
+            top: 10px; /* Ajusta la posición en la esquina superior derecha */
+            right: 20px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: orange;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+            right: 0; /* Ajusta el margen derecho de la lista desplegable */
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-button {
+            background-color: orange;
+            color: black;
+            padding: 10px 20px;
+            border: none;
+            text-decoration: none;
+            border-radius: 5px;
+            display: block;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-button:hover {
+            background-color: black;
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="logo">
+            <a href="{{ url_for('admin') }}" style="text-decoration: none;">
+                <img src="{{ url_for('static', filename='logotipo.png') }}" alt="PT AGENCY" title="PT AGENCY">
+            </a>
+        </h1>
+        <div class="buttons">
+            <a href="{{ url_for('rutas') }}" class="button">Modificar Rutas</a>
+            <a href="{{ url_for('horarios') }}" class="button">Modificar Horarios</a>
+            <a href="{{ url_for('precios') }}" class="button">Modificar Precios</a>
+            <a href="" class="button">Estado de Vehículos</a>
+        </div>
+        <div class="user-info">
+            <div class="dropdown">
+                <button class="dropdown-button">{{ admin_name }}</button>
+                <div class="dropdown-content">
+                    <a href="" class="dropdown-button">Perfil</a>
+                    <a href="" class="dropdown-button">Historial de Servicio</a>
+                    <a href="" class="dropdown-button">Opciones de Administrador</a>
+                    <a href="" class="dropdown-button">Lista de Usuarios</a>
+                    <a href="{{ url_for('login') }}" class="dropdown-button logout-button">Cerrar Sesión</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block content %}{% endblock %}
+</body>
+</html>
