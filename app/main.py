@@ -58,7 +58,8 @@ def usuario():
 @app.route('/admin')
 def admin():
     if 'username' in session:
-        return "Página de administrador"
+        username = session['username']  # Obtén el nombre de usuario de la sesión
+        return render_template('panelAdmin.html', admin_name=username)
     else:
         return redirect(url_for('login'))
 

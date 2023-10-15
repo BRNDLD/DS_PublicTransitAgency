@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <title>Panel de Usuario - PTAGENCY</title>
+    <title>PTAGENCY</title>
     <style>
         body {
             background-color: orange; /* Color de fondo naranja */
@@ -28,11 +28,30 @@
             height: auto;
         }
 
-        .user-info {
-            color: white; /* Cambia el color de texto a blanco */
-            text-align: right;
-            font-size: 18px; /* Tamaño del texto (ajustar según tu preferencia) */
-            margin-right: 20px;
+        .buttons {
+            display: flex;
+            justify-content: center; /* Centra los botones horizontalmente */
+            align-items: center; /* Centra los botones verticalmente */
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: orange; /* Color de fondo naranja */
+            color: black; /* Texto en negro */
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+
+        .login-button {
+            background-color: black; /* Color de fondo negro */
+            color: orange; /* Texto en naranja */
+        }
+
+        .logout-button {
+            background-color: black; /* Color de fondo negro */
+            color: orange; /* Texto en naranja */
         }
 
         .dropdown {
@@ -72,11 +91,6 @@
             background-color: black;
             color: orange;
         }
-
-        .logout-button {
-            background-color: black; /* Color de fondo negro */
-            color: orange; /* Texto en naranja */
-        }
     </style>
 </head>
 <body>
@@ -86,6 +100,11 @@
                 <img src="{{ url_for('static', filename='logotipo.png') }}" alt="PT AGENCY" title="PT AGENCY">
             </a>
         </h1>
+        <div class="buttons">
+            <a href="{{ url_for('rutas') }}" class="button">Rutas</a>
+            <a href="{{ url_for('horarios') }}" class="button">Horarios</a>
+            <a href="{{ url_for('precios') }}" class="button">Precios</a>
+        </div>
         <div class="user-info">
             <div class="dropdown">
                 <button class="dropdown-button">{{ user_name }}</button>
@@ -95,9 +114,6 @@
                     <a href="{{ url_for('login') }}" class="dropdown-button logout-button">Cerrar Sesión</a>
                 </div>
             </div>
-        </div>
-        <div class="buttons">
-            <!-- Botones adicionales o contenido específico para el usuario -->
         </div>
     </div>
     {% block content %}{% endblock %}
