@@ -7,8 +7,8 @@ app.secret_key = 'tu_clave_secreta'  # Cambia 'tu_clave_secreta' a una clave sec
 
 # Función para cargar datos de usuarios y administradores desde archivos JSON
 def cargar_datos():
-    users_file_path = os.path.join("data", "users.json")
-    admin_file_path = os.path.join("data", "admin.json")
+    users_file_path = os.path.join("app","data", "users.json")
+    admin_file_path = os.path.join("app","data", "admin.json")
 
     with open(users_file_path, 'r') as users_file:
         users = json.load(users_file)
@@ -84,12 +84,12 @@ def signup():
                     "password": password,
                     "code": code
                 }
-                with open("data/admin.json", 'w') as admin_file:
+                with open(os.path.join("data", "admin.json"), 'w') as admin_file:
                     json.dump(admin, admin_file)
             else:
                 # Registro como usuario
                 users[username] = password
-                with open("data/users.json", 'w') as users_file:
+                with open(os.path.join("data", "users.json"), 'w') as users_file:
                     json.dump(users, users_file)
 
             success_message = "Registro exitoso. Ahora puedes iniciar sesión."
