@@ -3,6 +3,19 @@
 <head>
     <title>Tabla de Estados de Vehículos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .notification {
+            display: none;
+            position: absolute;
+            background-color: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
 </head>
 <body>
     <h1>Vehículos Activos</h1>
@@ -87,8 +100,10 @@
             <option value="privado">Transporte Privado</option>
         </select>
         
-        <button type="submit">Agregar Vehículo</button>
+        <button type="submit" id="agregarButton">Agregar Vehículo</button>
     </form>
+
+    <div class="notification" id="notification" style="display: none;"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -123,6 +138,27 @@
                         });
                 });
             });
+
+            const agregarButton = document.getElementById('agregarButton');
+            const placaInput = document.querySelector('input[name="placa"]');
+            const notification = document.getElementById('notification');
+
+            agregarButton.addEventListener('click', function (event) {
+                const placa = placaInput.value;
+                const placasExistentes = Array.from(document.querySelectorAll('td')).map(td => td.textContent);
+                if (placasExistentes.includes(placa)) {
+                    event.preventDefault();
+                    showNotification('La placa ya existe. Introduce una placa única.');
+                }
+            });
+
+            function showNotification(message) {
+                notification.textContent = message;
+                notification.style.display = 'block';
+                setTimeout(function () {
+                    notification.style.display = 'none';
+                }, 3000);  // La notificación desaparecerá después de 3 segundos
+            }
         });
     </script>
 </body>
