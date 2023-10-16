@@ -112,5 +112,9 @@ def rutas():
 def precios():
     return render_template('precios.html')
 
+@app.route('/pagos')
+def pagos():
+    return render_template('pagos.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
