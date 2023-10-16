@@ -14,7 +14,7 @@ with open(ruta_json, 'r') as vehiculos_file:
 mantenimiento.secret_key = '001'  # Reemplaza 'tu_clave_secreta_aqui' con una cadena segura
 
 # Ruta para cargar la página HTML
-@mantenimiento.route('/admin/mantenimiento')
+@mantenimiento.route('/')
 def mostrar_tablas():
     return render_template('mantenimiento.html', datos=vehiculos)
 
