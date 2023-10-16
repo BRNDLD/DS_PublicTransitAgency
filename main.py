@@ -1,8 +1,10 @@
 import os
 import json
 from flask import Flask, render_template, request, redirect, url_for, session
+from logic.usuario import User
 
 app = Flask(__name__)
+user = User()
 app.secret_key = 'tu_clave_secreta'  # Cambia 'tu_clave_secreta' a una clave secreta segura
 
 # Función para cargar datos de usuarios y administradores desde archivos JSON
@@ -71,32 +73,11 @@ def signup():
         confirm_password = request.form.get('confirm-password')
         code = request.form.get('code')
 
-        users, admin = cargar_datos()
-
-        if username in users or username in admin:
-            error_message = "El nombre de usuario ya está en uso. Por favor, elige otro."
-            return render_template('signup.html', error=error_message)
-
-        if password == confirm_password:
-            if code:
-                # Registro como administrador
-                admin[username] = {
-                    "password": password,
-                    "code": code
-                }
-                with open(os.path.join("data", "admin.json"), 'w') as admin_file:
-                    json.dump(admin, admin_file)
-            else:
-                # Registro como usuario
-                users[username] = password
-                with open(os.path.join("data", "users.json"), 'w') as users_file:
-                    json.dump(users, users_file)
-
-            success_message = "Registro exitoso. Ahora puedes iniciar sesión."
-            return render_template('signup.html', success=success_message)
+        result = user.signup(username, password, confirm_password, code)
+        if result != "Registro exitoso. Ahora puedes iniciar sesión.":
+            return render_template('signup.html', error=result)
         else:
-            error_message = "Las contraseñas no coinciden."
-            return render_template('signup.html', error=error_message)
+            return render_template('signup.html', success=result)
 
     return render_template('signup.html')
 

@@ -3,20 +3,33 @@
     <div class="content">
         <h2>Registrarse</h2>
         <form action="" method="post">
-            <input type="text" name="username" placeholder="Usuario" required>
-            <input type="password" name="password" placeholder="Contraseña" required>
-            <input type="password" name="confirm-password" placeholder="Confirmar Contraseña" required>
-            <input type="text" name="code" placeholder="Código (solo para administradores)">
+            <div class="form-field">
+                <input type="text" name="username" placeholder="Usuario" required>
+                <img src="{{ url_for('static', filename='advertencia.png') }}" alt="Advertencia" class="tooltip" data-tooltip="El nombre de usuario debe tener al menos 6 caracteres.">
+            </div>
+            <div class="form-field">
+                <input type="password" name="password" placeholder="Contraseña" required>
+                <img src="{{ url_for('static', filename='advertencia.png') }}" alt="Advertencia" class="tooltip" data-tooltip="La contraseña debe tener al menos 8 caracteres y contener al menos un número.">
+            </div>
+            <div class="form-field">
+                <input type="password" name="confirm-password" placeholder="Confirmar Contraseña" required>
+            </div>
+            <div class="form-field">
+                <input type="text" name="code" placeholder="Código (solo para administradores)">
+                <img src="{{ url_for('static', filename='advertencia.png') }}" alt="Advertencia" class="tooltip" data-tooltip="El código debe tener el formato 3 números y 3 letras.">
+            </div>
             <button type="submit">Registrarse</button>
         </form>
         {% if error %}
-        <p style="color: red;">{{ error }}</p>
-        {% endif %}
-        {% if success %}
-        <p style="color: green;">{{ success }}</p>
-        <a href="{{ url_for('login') }}" class="button">Iniciar sesión</a>
+        <p style="color: red; text-align: center;">{{ error }}</p>
         {% endif %}
     </div>
+    {% if success %}
+    <div class="content">
+        <p style="color: green; text-align: center;">{{ success }}</p>
+        <a href="{{ url_for('login') }}" class="button">Iniciar sesión</a>
+    </div>
+    {% endif %}
     <style>
         .content {
             text-align: center;
@@ -32,12 +45,25 @@
         }
 
         form {
-            max-width: 400px;
+            max-width: 600px; /* Aumenta el tamaño del recuadro naranja */
             margin: 0 auto;
             padding: 20px;
             background-color: rgba(255, 165, 0, 0.7);
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-field {
+            position: relative;
+        }
+
+        .tooltip {
+            position: absolute;
+            top: 0;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
         }
 
         input[type="text"],
@@ -53,8 +79,30 @@
             background-color: orange;
             color: #000;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             padding: 10px 20px;
+            margin-top: 20px;
         }
     </style>
+    <script>
+        // Agregar el comportamiento del tooltip
+        const tooltips = document.querySelectorAll('.tooltip');
+        tooltips.forEach((tooltip) => {
+            tooltip.addEventListener('mouseover', () => {
+                const message = tooltip.getAttribute('data-tooltip');
+                const tooltipElement = document.createElement('div');
+                tooltipElement.className = 'tooltip-message';
+                tooltipElement.innerText = message;
+                tooltip.parentElement.appendChild(tooltipElement);
+            });
+
+            tooltip.addEventListener('mouseout', () => {
+                const tooltipElement = tooltip.parentElement.querySelector('.tooltip-message');
+                if (tooltipElement) {
+                    tooltipElement.remove();
+                }
+            });
+        });
+    </script>
+</style>
 {% endblock %}
