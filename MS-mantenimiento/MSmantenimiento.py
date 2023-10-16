@@ -14,7 +14,7 @@ with open(ruta_json, 'r') as vehiculos_file:
 mantenimiento.secret_key = '001'  # Reemplaza 'tu_clave_secreta_aqui' con una cadena segura
 
 # Ruta para cargar la página HTML
-@mantenimiento.route('/')
+@mantenimiento.route('/admin/mantenimiento')
 def mostrar_tablas():
     return render_template('mantenimiento.html', datos=vehiculos)
 
@@ -59,4 +59,4 @@ def agregar_vehiculo():
     return redirect('/')
 
 if __name__ == '__main__':
-    mantenimiento.run()
+    mantenimiento.run(port=5002)
