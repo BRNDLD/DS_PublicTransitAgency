@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "tipo": "Autob\u00fas",
+        "ruta": "X-102",
+        "horario": "19:52"
+    },
+    {
+        "id": 2,
+        "tipo": "Tren",
+        "ruta": "X-103",
+        "horario": "23:48"
+    },
+    {
+        "id": 3,
+        "tipo": "Transporte Accesible",
+        "ruta": "X-104",
+        "horario": "23:48"
+    },
+    {
+        "id": 4,
+        "tipo": "Tren",
+        "ruta": "X-102",
+        "horario": "19:57"
+    },
+    {
+        "id": 5,
+        "tipo": "Autob\u00fas",
+        "ruta": "X-104",
+        "horario": "22:03"
+    },
+    {
+        "id": 6,
+        "tipo": "Taxis",
+        "ruta": "X-104",
+        "horario": "22:24"
+    },
+    {
+        "id": 7,
+        "tipo": "Adaptado",
+        "ruta": "X-103",
+        "horario": "20:27"
+    },
+    {
+        "id": 8,
+        "tipo": "Privado",
+        "ruta": "X-103",
+        "horario": "20:29"
+    }
+]

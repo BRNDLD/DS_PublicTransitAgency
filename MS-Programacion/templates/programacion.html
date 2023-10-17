@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Programación de Transporte</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+</head>
+
+<body>
+    <div class="container text-center">
+        <h1>Gestión de Programación de Transporte</h1>
+
+        <h2>Agregar Servicio de Transporte</h2>
+    </div>
+    <form id="service-form">
+        <label for="tipo">Tipo de Servicio:</label>
+        <select id="tipo" name="tipo">
+            <option value="Autobús">Autobús</option>
+            <option value="Tren">Tren</option>
+            <option value="Taxis">Taxis</option>
+            <option value="Adaptado">Adaptado</option>
+            <option value="Privado">Privado</option>
+        </select><br>
+
+        <label for="ruta">Ruta:</label>
+        <select id="ruta" name="ruta">
+            <option value="X-103">X-103</option>
+            <option value="X-102">X-102</option>
+            <option value="X-104">X-104</option>
+        </select><br>
+
+        <label for "horario">Horario:</label>
+        <input type="time" id="horario" name="horario" required><br>
+
+        <button type="submit">Agregar Servicio</button>
+    </form>
+
+    <div id="service-list-container">
+        <div class="service-list">
+            <h2>Servicios de Autobús</h2>
+            <ul id="autobus-services">
+                <!-- Contenido de la lista de autobuses -->
+            </ul>
+        </div>
+    
+        <div class="service-list">
+            <h2>Servicios de Tren</h2>
+            <ul id="tren-services">
+                <!-- Contenido de la lista de trenes -->
+            </ul>
+        </div>
+    
+        <div class="service-list">
+            <h2>Servicios de Taxis</h2>
+            <ul id="taxis-services">
+                <!-- Contenido de la lista de taxis -->
+            </ul>
+        </div>
+        <div class="service-list">
+            <h2>Servicios de Adaptados</h2>
+            <ul id="adaptado-services">
+                <!-- Contenido de la lista de adaptado -->
+            </ul>
+        </div>
+        <div class="service-list">
+            <h2>Servicios de Privados</h2>
+            <ul id="privado-services">
+                <!-- Contenido de la lista de privados -->
+            </ul>
+        </div>
+    </div>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Función para cargar y mostrar servicios de transporte
+            function loadTransportServices() {
+                fetch('/services')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Limpiar las listas
+                        document.getElementById('autobus-services').innerHTML = '';
+                        document.getElementById('tren-services').innerHTML = '';
+                        document.getElementById('taxis-services').innerHTML = '';
+                        document.getElementById('adaptado-services').innerHTML = '';
+                        document.getElementById('privado-services').innerHTML = '';
+
+                        data.forEach(service => {
+                            const li = document.createElement('li');
+                            li.innerText = `Ruta: ${service.ruta}, Horario: ${service.horario}`;
+
+                            // Determinar el tipo de servicio y agregarlo a la lista correspondiente
+                            if (service.tipo === 'Autobús') {
+                                document.getElementById('autobus-services').appendChild(li);
+                            } else if (service.tipo === 'Tren') {
+                                document.getElementById('tren-services').appendChild(li);
+                            } else if (service.tipo === 'Taxis') {
+                                document.getElementById('taxis-services').appendChild(li);
+                            } else if (service.tipo === 'Adaptado') {
+                                document.getElementById('adaptado-services').appendChild(li);
+                            }  else if (service.tipo === 'Privado') {
+                                document.getElementById('privado-services').appendChild(li);
+                            }  
+                        });
+                    });
+            }
+
+            // Cargar servicios al cargar la página
+            loadTransportServices();
+
+            // Manejar el envío del formulario
+            const serviceForm = document.getElementById('service-form');
+            serviceForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(serviceForm);
+
+                fetch('/services', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        tipo: formData.get('tipo'),
+                        ruta: formData.get('ruta'),
+                        horario: formData.get('horario')
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Limpiar el formulario
+                        serviceForm.reset();
+
+                        // Volver a cargar y mostrar servicios actualizados
+                        loadTransportServices();
+                    });
+            });
+        });
+    </script>
+</body>
+
+</html>
