@@ -6,14 +6,15 @@
     <title>Gestión de Programación de Transporte</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
 </head>
 
 <body>
+    <!-- Agrega el logotipo en la esquina superior izquierda -->
+    <a href="https://ptagency.onrender.com/admin" class="logo">
+        <img src="{{ url_for('static', filename='logotipo.png') }}" alt="PT AGENCY" title="PT AGENCY" width="50">
+    </a>
     <div class="container text-center">
         <h1>Gestión de Programación de Transporte</h1>
-
-        <h2>Agregar Servicio de Transporte</h2>
     </div>
     <form id="service-form">
         <label for="tipo">Tipo de Servicio:</label>
@@ -32,7 +33,7 @@
             <option value="X-104">X-104</option>
         </select><br>
 
-        <label for "horario">Horario:</label>
+        <label for="horario">Horario:</label>
         <input type="time" id="horario" name="horario" required><br>
 
         <button type="submit">Agregar Servicio</button>
@@ -45,14 +46,14 @@
                 <!-- Contenido de la lista de autobuses -->
             </ul>
         </div>
-    
+
         <div class="service-list">
             <h2>Servicios de Tren</h2>
             <ul id="tren-services">
                 <!-- Contenido de la lista de trenes -->
             </ul>
         </div>
-    
+
         <div class="service-list">
             <h2>Servicios de Taxis</h2>
             <ul id="taxis-services">
@@ -72,7 +73,6 @@
             </ul>
         </div>
     </div>
-    
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -101,9 +101,9 @@
                                 document.getElementById('taxis-services').appendChild(li);
                             } else if (service.tipo === 'Adaptado') {
                                 document.getElementById('adaptado-services').appendChild(li);
-                            }  else if (service.tipo === 'Privado') {
+                            } else if (service.tipo === 'Privado') {
                                 document.getElementById('privado-services').appendChild(li);
-                            }  
+                            }
                         });
                     });
             }
