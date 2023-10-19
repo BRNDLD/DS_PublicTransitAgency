@@ -1,101 +1,79 @@
 import os
 import json
-from flask import Flask, render_template, request, redirect, url_for, session
+from fastapi import FastAPI, Request, Form
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from logic.usuario import User
 
-app = Flask(__name__)
-user = User()
-app.secret_key = 'tu_clave_secreta'  # Cambia 'tu_clave_secreta' a una clave secreta segura
+app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
-# Función para cargar datos de usuarios y administradores desde archivos JSON
-def cargar_datos():
-    users_file_path = os.path.join("data", "users.json")
-    admin_file_path = os.path.join("data", "admin.json")
+# Montar la configuración para servir archivos estáticos
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-    with open(users_file_path, 'r') as users_file:
-        users = json.load(users_file)
-    with open(admin_file_path, 'r') as admin_file:
-        admin = json.load(admin_file)
-    return users, admin
+# Crear una instancia de la clase User para gestionar la autenticación
+user_manager = User()
 
-@app.route('/')
-def home():
-    return render_template('home.html')
+# Ruta principal
+@app.get("/")
+async def home(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request})
 
 # Ruta de inicio de sesión
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        code = request.form.get('code')
+@app.get("/login")
+async def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request, "error": None})
 
-        users, admin = cargar_datos()
-
-        if username in users and password == users[username]:
-            session['username'] = username
-            return redirect(url_for('usuario'))
-        elif username in admin and password == admin[username]["password"]:
-            if 'code' in admin[username] and code == admin[username]['code']:
-                session['username'] = username
-                return redirect(url_for('admin'))
-            else:
-                error_message = "Código de administrador incorrecto"
-                return render_template('login.html', error=error_message)
-        else:
-            error_message = "Credenciales incorrectas"
-            return render_template('login.html', error=error_message)
-
-    return render_template('login.html')
-
-# Rutas para usuario y administrador
-@app.route('/usuario')
-def usuario():
-    if 'username' in session:
-        username = session['username']  # Obtén el nombre de usuario de la sesión
-        return render_template('panelUsuario.html', user_name=username)
+@app.post("/login")
+async def login_post(request: Request, username: str = Form(...), password: str = Form(...), code: str = Form(None)):
+    if code:
+        # Intento de inicio de sesión como administrador
+        if username in user_manager.admin and user_manager.admin[username]["password"] == password and user_manager.admin[username]["code"] == code:
+            return templates.TemplateResponse("panelAdmin.html", {"request": request, "admin_name": username})
     else:
-        return redirect(url_for('login'))
+        # Intento de inicio de sesión como usuario normal
+        if username in user_manager.users and user_manager.users[username] == password:
+            return templates.TemplateResponse("panelUsuario.html", {"request": request, "user_name": username})
 
-@app.route('/admin')
-def admin():
-    if 'username' in session:
-        username = session['username']  # Obtén el nombre de usuario de la sesión
-        return render_template('panelAdmin.html', admin_name=username)
-    else:
-        return redirect(url_for('login'))
+    error = "Credenciales incorrectas. Por favor, verifique sus datos e intente nuevamente."
+    return templates.TemplateResponse("login.html", {"request": request, "error": error})
 
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm-password')
-        code = request.form.get('code')
+# Ruta de Registro
+@app.get("/signup")
+async def signup(request: Request):
+    return templates.TemplateResponse("signup.html", {"request": request, "error": None, "success": None})
 
-        result = user.signup(username, password, confirm_password, code)
-        if result != "Registro exitoso. Ahora puedes iniciar sesión.":
-            return render_template('signup.html', error=result)
-        else:
-            return render_template('signup.html', success=result)
+@app.post("/signup")
+async def signup_post(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), code: str = Form(None)):
+    error = user_manager.signup(username, password, confirm_password, code)
+    if error:
+        return templates.TemplateResponse("signup.html", {"request": request, "error": error, "success": None})
+    return templates.TemplateResponse("signup.html", {"request": request, "error": None, "success": "Registro exitoso. Ahora puedes iniciar sesión."})
 
-    return render_template('signup.html')
+@app.get("/usuario")
+async def usuario(request: Request):
+    return templates.TemplateResponse("panelUsuario.html", {"request": request, "user_name": "Usuario"})
 
-@app.route('/horarios')
-def horarios():
-    return render_template('horarios.html')
+@app.get("/admin")
+async def admin(request: Request):
+    return templates.TemplateResponse("panelAdmin.html", {"request": request, "admin_name": "Administrador"})
 
-@app.route('/rutas')
-def rutas():
-    return render_template('rutas.html')
+@app.get("/horarios")
+async def horarios(request: Request):
+    return templates.TemplateResponse("horarios.html", {"request": request})
 
-@app.route('/precios')
-def precios():
-    return render_template('precios.html')
+@app.get("/rutas")
+async def rutas(request: Request):
+    return templates.TemplateResponse("rutas.html", {"request": request})
 
-@app.route('/pagos')
-def pagos():
-    return render_template('pagos.html')
+@app.get("/precios")
+async def precios(request: Request):
+    return templates.TemplateResponse("precios.html", {"request": request})
 
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.get("/pagos")
+async def pagos(request: Request):
+    return templates.TemplateResponse("pagos.html", {"request": request})
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
