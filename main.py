@@ -1,5 +1,4 @@
-import os
-import json
+import os, json, uvicorn
 from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -75,5 +74,4 @@ async def pagos(request: Request):
     return templates.TemplateResponse("pagos.html", {"request": request})
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
