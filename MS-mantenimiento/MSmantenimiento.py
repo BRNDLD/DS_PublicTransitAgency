@@ -1,9 +1,12 @@
-from flask import Flask, flash, render_template, jsonify, request, redirect
-import json, os
+from fastapi import FastAPI, HTTPException, Form, Request
+from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+import json, os, uvicorn
 
-mantenimiento = Flask(__name__)
+mantenimiento = FastAPI()
 
-# Define la ruta completa al archivo 'buses.json' en Render
+# Define la ruta completa al archivo 'buses.json'
 ruta_json = os.path.join(os.path.dirname(__file__), 'buses.json')
 
 # Leer datos de vehículos desde el archivo JSON
@@ -11,18 +14,21 @@ with open(ruta_json, 'r') as vehiculos_file:
     vehiculos = json.load(vehiculos_file)
 
 # Configurar la clave secreta
-mantenimiento.secret_key = '001'  # Reemplaza 'tu_clave_secreta_aqui' con una cadena segura
+mantenimiento.secret_key = '001'
 
-# Ruta para cargar la página HTML
-@mantenimiento.route('/')
-def mostrar_tablas():
-    return render_template('mantenimiento.html', datos=vehiculos)
+# Configurar la carpeta de plantillas para Jinja2
+templates = Jinja2Templates(directory="MS-mantenimiento/templates")
+
+# Configurar la gestión de archivos estáticos para servir CSS y otros archivos estáticos
+mantenimiento.mount("/static", StaticFiles(directory="MS-mantenimiento/static"), name="static")
+
+@mantenimiento.get("/")
+async def mostrar_tablas(request: Request):
+    return templates.TemplateResponse("mantenimiento.html", {"request": request, "datos": vehiculos})
 
 # Ruta para cambiar el estado de un vehículo
-@mantenimiento.route('/cambiar_estado/<placa>', methods=['POST'])
-def cambiar_estado(placa):
-    nuevo_estado = request.json['nuevo_estado']
-
+@mantenimiento.post('/cambiar_estado/{placa}')
+async def cambiar_estado(placa: str, nuevo_estado: str = Form(...)):
     for vehiculo in vehiculos:
         if vehiculo['placa'] == placa:
             vehiculo['estado'] = nuevo_estado
@@ -30,33 +36,32 @@ def cambiar_estado(placa):
     with open(ruta_json, 'w') as vehiculos_file:
         json.dump(vehiculos, vehiculos_file, indent=4)
 
-    return jsonify({'nuevo_estado': nuevo_estado})
+    return RedirectResponse(url='/')
 
 # Ruta y formulario para agregar vehículos
-@mantenimiento.route('/agregar_vehiculo', methods=['POST'])
-def agregar_vehiculo():
-    placa = request.form['placa']
-    estado = request.form['estado']
-    tipo = request.form['tipo']  # Obtén el valor del campo "tipo de vehículo"
-
-    # Validar que la placa sea única
+@mantenimiento.post('/agregar_vehiculo')
+async def agregar_vehiculo(
+        placa: str = Form(...),
+        estado: str = Form(..., name="nuevo_estado"),
+        tipo: str = Form(...)
+    ):
     placas_existentes = [vehiculo['placa'] for vehiculo in vehiculos]
     if placa in placas_existentes:
-        flash('La placa ya existe. Introduce una placa única.', 'error')
+        raise HTTPException(status_code=400, detail='La placa ya existe. Introduce una placa única.')
     elif len(placa) != 3:
-        flash('La placa debe tener exactamente 3 dígitos.', 'error')
+        raise HTTPException(status_code=400, detail='La placa debe tener exactamente 3 dígitos.')
     else:
         nuevo_vehiculo = {
             'placa': placa,
             'estado': estado,
-            'tipo': tipo  # Agrega el atributo "tipo de vehículo"
+            'tipo': tipo
         }
         vehiculos.append(nuevo_vehiculo)
 
         with open(ruta_json, 'w') as vehiculos_file:
             json.dump(vehiculos, vehiculos_file, indent=4)
 
-    return redirect('/')
+    return RedirectResponse(url='/')
 
 if __name__ == '__main__':
-    mantenimiento.run(port=5002)
+    uvicorn.run(mantenimiento, host="0.0.0.0", port=8000)

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Tabla de Estados de Vehículos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
     <style>
         .notification {
             display: none;
@@ -28,7 +28,7 @@
 <body>
     <!-- Agrega el logotipo en la esquina superior izquierda -->
     <a href="https://ptagency.onrender.com/admin" class="logo">
-        <img src="{{ url_for('static', filename='logotipo.png') }}" alt="PT AGENCY" title="PT AGENCY" width="50">
+        <img src="{{ url_for('static', path='logotipo.png') }}" alt="PT AGENCY" title="PT AGENCY" width="50">
     </a>
     <h1>Vehículos Activos</h1>
     
@@ -48,7 +48,7 @@
                     <td>{{ vehiculo.tipo }}</td>
                     <td>{{ vehiculo.estado }}</td>
                     <td>
-                        <form action="/cambiar_estado/{{ vehiculo.placa }}" method="post">
+                        <form class="cambiar-estado-form" data-placa="{{ vehiculo.placa }}">
                             <select name="nuevo_estado">
                                 <option value="activo">Activo</option>
                                 <option value="mantenimiento">Mantenimiento</option>
@@ -78,7 +78,7 @@
                     <td>{{ vehiculo.tipo }}</td>
                     <td>{{ vehiculo.estado }}</td>
                     <td>
-                        <form action="/cambiar_estado/{{ vehiculo.placa }}" method="post">
+                        <form class="cambiar-estado-form" data-placa="{{ vehiculo.placa }}">
                             <select name="nuevo_estado">
                                 <option value="activo">Activo</option>
                                 <option value="mantenimiento">Mantenimiento</option>
@@ -117,46 +117,31 @@
 
     <div class="notification" id="notification" style="display: none;"></div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const cambiarEstadoForms = document.querySelectorAll('form[action^="/cambiar_estado/"]');
-            cambiarEstadoForms.forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    event.preventDefault();
-                    const placa = this.getAttribute('action').replace('/cambiar_estado/', '');
-                    const nuevoEstado = this.querySelector('select[name="nuevo_estado"]').value;
+        $(document).ready(function () {
+            // Captura el evento submit de los formularios de cambio de estado
+            $(".cambiar-estado-form").submit(function (event) {
+                event.preventDefault();
+                const form = $(this);
+                const placa = form.data('placa');
+                const nuevoEstado = form.find('select[name="nuevo_estado"]').val();
 
-                    // Realizar una solicitud POST al servidor para cambiar el estado
-                    fetch('/cambiar_estado/' + placa, {
-                        method: 'POST',
-                        body: JSON.stringify({ nuevo_estado: nuevoEstado }),
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    })
-                        .then(function (response) {
-                            if (response.ok) {
-                                return response.json();
-                            } else {
-                                throw Error('Error al cambiar el estado');
-                            }
-                        })
-                        .then(function (data) {
-                            // Redirigir la página para que se refresque con los datos actualizados
-                            window.location.reload();
-                        })
-                        .catch(function (error) {
-                            console.error('Error:', error);
-                        });
+                // Realizar una solicitud POST al servidor para cambiar el estado
+                $.post(`/cambiar_estado/${placa}`, { nuevo_estado: nuevoEstado }, function (data) {
+                    // Recargar la página para reflejar los cambios
+                    location.reload();
+                }).fail(function (error) {
+                    console.error('Error:', error);
                 });
             });
 
-            const agregarButton = document.getElementById('agregarButton');
-            const placaInput = document.querySelector('input[name="placa"]');
-            const notification = document.getElementById('notification');
+            const agregarButton = $("#agregarButton");
+            const placaInput = $("input[name='placa']");
+            const notification = $("#notification");
 
-            agregarButton.addEventListener('click', function (event) {
-                const placa = placaInput.value;
+            agregarButton.click(function (event) {
+                const placa = placaInput.val();
                 const placasExistentes = Array.from(document.querySelectorAll('td')).map(td => td.textContent);
                 if (placasExistentes.includes(placa)) {
                     event.preventDefault();
@@ -165,10 +150,10 @@
             });
 
             function showNotification(message) {
-                notification.textContent = message;
-                notification.style.display = 'block';
+                notification.text(message);
+                notification.css("display", "block");
                 setTimeout(function () {
-                    notification.style.display = 'none';
+                    notification.css("display", "none");
                 }, 3000);  // La notificación desaparecerá después de 3 segundos
             }
         });
