@@ -118,6 +118,7 @@
     <div class="notification" id="notification" style="display: none;"></div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
             // Captura el evento submit del formulario para agregar vehículos
@@ -126,7 +127,19 @@
                 const placa = $("input[name='placa']").val();
                 const estado = $("#nuevoEstadoSelect").val();
                 const tipo = $("#tipoVehiculoSelect").val();
-
+    
+                // Validar que la placa tenga 3 dígitos
+                if (!/^\d{3}$/.test(placa)) {
+                    showNotification("La placa debe tener exactamente 3 dígitos.");
+                    return;
+                }
+    
+                // Validar si la placa ya existe en la tabla
+                if ($("#active-vehicles td:contains('" + placa + "')").length > 0 || $("#maintenance-vehicles td:contains('" + placa + "')").length > 0) {
+                    showNotification("La placa ya existe en la tabla.");
+                    return;
+                }
+    
                 // Agregar el vehículo a la tabla correspondiente
                 const newRow = "<tr><td>" + placa + "</td><td>" + tipo + "</td><td>" + estado + "</td><td><form class='cambiar-estado-form' data-placa='" + placa + "'><select name='nuevo_estado'><option value='activo'>Activo</option><option value='mantenimiento'>Mantenimiento</option></select><button type='submit'>Cambiar Estado</button></form></td></tr>";
                 if (estado === 'activo') {
@@ -134,15 +147,15 @@
                 } else if (estado === 'mantenimiento') {
                     $("#maintenance-vehicles").append(newRow);
                 }
-
+    
                 // Realizar una solicitud POST al servidor para agregar el vehículo al JSON
                 // Aquí debes agregar el código para actualizar el archivo JSON en el servidor
                 // y agregar el nuevo vehículo.
-
+    
                 // Limpia los campos del formulario
                 $("input[name='placa']").val("");
             });
-
+    
             // Captura el evento submit de los formularios de cambio de estado
             $(".cambiar-estado-form").submit(function (event) {
                 event.preventDefault();
@@ -157,7 +170,7 @@
                 } else if (nuevoEstado === 'activo') {
                     $("#active-vehicles").append(row);
                 }
-
+    
                 // Realizar una solicitud POST al servidor para cambiar el estado
                 $.post(`/cambiar_estado/${placa}`, { nuevo_estado: nuevoEstado }, function (data) {
                     // Recargar la página para reflejar los cambios
@@ -166,9 +179,9 @@
                     console.error('Error:', error);
                 });
             });
-
+    
             const notification = $("#notification");
-
+    
             function showNotification(message) {
                 notification.text(message);
                 notification.css("display", "block");
@@ -178,5 +191,4 @@
             }
         });
     </script>
-</body>
-</html>
+    

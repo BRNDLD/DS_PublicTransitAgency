@@ -74,9 +74,11 @@ async def agregar_vehiculo(
         vehiculos_activos, vehiculos_mantenimiento = actualizar_listas_de_vehiculos()
 
         with open(ruta_json, 'w') as vehiculos_file:
+            # Escribe la lista de vehículos en el archivo JSON actualizado
             json.dump(vehiculos, vehiculos_file, indent=4)
 
     return RedirectResponse(url='/')
+
 
 if __name__ == '__main__':
     uvicorn.run(mantenimiento, host="127.0.0.1", port=8000)

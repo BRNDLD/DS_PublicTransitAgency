@@ -1,7 +1,7 @@
 [
     {
         "placa": "123",
-        "estado": "mantenimiento",
+        "estado": "activo",
         "tipo": "bus"
     },
     {
@@ -11,7 +11,7 @@
     },
     {
         "placa": "321",
-        "estado": "activo",
+        "estado": "mantenimiento",
         "tipo": "bus"
     },
     {
@@ -33,5 +33,20 @@
         "placa": "112",
         "estado": "activo",
         "tipo": "adaptado"
+    },
+    {
+        "placa": "789",
+        "estado": "activo",
+        "tipo": "bus"
+    },
+    {
+        "placa": "888",
+        "estado": "mantenimiento",
+        "tipo": "bus"
+    },
+    {
+        "placa": "129",
+        "estado": "activo",
+        "tipo": "bus"
     }
 ]
