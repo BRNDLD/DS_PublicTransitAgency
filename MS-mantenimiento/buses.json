@@ -28,5 +28,10 @@
         "placa": "111",
         "estado": "activo",
         "tipo": "adaptado"
+    },
+    {
+        "placa": "112",
+        "estado": "activo",
+        "tipo": "adaptado"
     }
 ]

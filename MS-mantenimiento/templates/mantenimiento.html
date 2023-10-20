@@ -98,13 +98,13 @@
         <input type="text" name="placa" required pattern="[0-9]{3}" title="Debe tener 3 dígitos">
         
         <label for="estado">Estado:</label>
-        <select name="estado">
+        <select name="estado" id="nuevoEstadoSelect">
             <option value="activo">Activo</option>
             <option value="mantenimiento">Mantenimiento</option>
         </select>
         
-        <label for "tipo">Tipo de Vehículo:</label>
-        <select name="tipo">
+        <label for="tipo">Tipo de Vehículo:</label>
+        <select name="tipo" id="tipoVehiculoSelect">
             <option value="bus">Bus</option>
             <option value="tren">Tren</option>
             <option value="taxis">Taxis</option>
@@ -120,6 +120,29 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
+            // Captura el evento submit del formulario para agregar vehículos
+            $("#agregarButton").click(function (event) {
+                event.preventDefault();
+                const placa = $("input[name='placa']").val();
+                const estado = $("#nuevoEstadoSelect").val();
+                const tipo = $("#tipoVehiculoSelect").val();
+
+                // Agregar el vehículo a la tabla correspondiente
+                const newRow = "<tr><td>" + placa + "</td><td>" + tipo + "</td><td>" + estado + "</td><td><form class='cambiar-estado-form' data-placa='" + placa + "'><select name='nuevo_estado'><option value='activo'>Activo</option><option value='mantenimiento'>Mantenimiento</option></select><button type='submit'>Cambiar Estado</button></form></td></tr>";
+                if (estado === 'activo') {
+                    $("#active-vehicles").append(newRow);
+                } else if (estado === 'mantenimiento') {
+                    $("#maintenance-vehicles").append(newRow);
+                }
+
+                // Realizar una solicitud POST al servidor para agregar el vehículo al JSON
+                // Aquí debes agregar el código para actualizar el archivo JSON en el servidor
+                // y agregar el nuevo vehículo.
+
+                // Limpia los campos del formulario
+                $("input[name='placa']").val("");
+            });
+
             // Captura el evento submit de los formularios de cambio de estado
             $(".cambiar-estado-form").submit(function (event) {
                 event.preventDefault();
@@ -144,18 +167,7 @@
                 });
             });
 
-            const agregarButton = $("#agregarButton");
-            const placaInput = $("input[name='placa']");
             const notification = $("#notification");
-
-            agregarButton.click(function (event) {
-                const placa = placaInput.val();
-                const placasExistentes = Array.from(document.querySelectorAll('td:nth-child(1)')).map(td => td.textContent);
-                if (placasExistentes.includes(placa)) {
-                    event.preventDefault();
-                    showNotification('La placa ya existe. Introduce una placa única.');
-                }
-            });
 
             function showNotification(message) {
                 notification.text(message);
