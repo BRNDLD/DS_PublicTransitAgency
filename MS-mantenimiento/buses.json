@@ -48,5 +48,10 @@
         "placa": "129",
         "estado": "activo",
         "tipo": "bus"
+    },
+    {
+        "placa": "753",
+        "estado": "mantenimiento",
+        "tipo": "bus"
     }
 ]

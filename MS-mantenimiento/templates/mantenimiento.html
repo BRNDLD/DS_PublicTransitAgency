@@ -53,7 +53,7 @@
                                 <option value="activo">Activo</option>
                                 <option value="mantenimiento">Mantenimiento</option>
                             </select>
-                            <button type="submit">Cambiar Estado</button>
+                            <button type="button" class="cambiar-estado-button">Cambiar Estado</button>
                         </form>
                     </td>
                 </tr>
@@ -83,7 +83,7 @@
                                 <option value="activo">Activo</option>
                                 <option value="mantenimiento">Mantenimiento</option>
                             </select>
-                            <button type="submit">Cambiar Estado</button>
+                            <button type="button" class="cambiar-estado-button">Cambiar Estado</button>
                         </form>
                     </td>
                 </tr>
@@ -91,41 +91,40 @@
         </tbody>
     </table>
 
-    <!-- Formulario para agregar vehículos -->
-    <h1>Agregar Vehículo</h1>
-    <form action="/agregar_vehiculo" method="post">
-        <label for="placa">Número de Placa (3 dígitos):</label>
-        <input type="text" name="placa" required pattern="[0-9]{3}" title="Debe tener 3 dígitos">
-        
-        <label for="estado">Estado:</label>
-        <select name="estado" id="nuevoEstadoSelect">
-            <option value="activo">Activo</option>
-            <option value="mantenimiento">Mantenimiento</option>
-        </select>
-        
-        <label for="tipo">Tipo de Vehículo:</label>
-        <select name="tipo" id="tipoVehiculoSelect">
-            <option value="bus">Bus</option>
-            <option value="tren">Tren</option>
-            <option value="taxis">Taxis</option>
-            <option value="adaptado">Vehículo Adaptado</option>
-            <option value="privado">Transporte Privado</option>
-        </select>
-        
-        <button type="submit" id="agregarButton">Agregar Vehículo</button>
-    </form>
+<!-- Formulario para agregar vehículos -->
+<h1>Agregar Vehículo</h1>
+<form id="agregarVehiculoForm" method="post" action="/agregar_vehiculo">
+    <label for="placa">Número de Placa (3 dígitos):</label>
+    <input type="text" name="placa" required pattern="[0-9]{3}" title="Debe tener 3 dígitos">
+    
+    <label for="nuevo_estado">Estado:</label>
+    <select name="nuevo_estado">
+        <option value="activo">Activo</option>
+        <option value="mantenimiento">Mantenimiento</option>
+    </select>
+    
+    <label for="tipo">Tipo de Vehículo:</label>
+    <select name="tipo" id="tipoVehiculoSelect">
+        <option value="bus">Bus</option>
+        <option value="tren">Tren</option>
+        <option value="taxis">Taxis</option>
+        <option value="adaptado">Vehículo Adaptado</option>
+        <option value="privado">Transporte Privado</option>
+    </select>
+    
+    <button type="submit" id="agregarButton">Agregar Vehículo</button>
+</form>
 
     <div class="notification" id="notification" style="display: none;"></div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
             // Captura el evento submit del formulario para agregar vehículos
-            $("#agregarButton").click(function (event) {
+            $("#agregarVehiculoForm").submit(function (event) {
                 event.preventDefault();
                 const placa = $("input[name='placa']").val();
-                const estado = $("#nuevoEstadoSelect").val();
+                const estado = $("select[name='nuevo_estado']").val();
                 const tipo = $("#tipoVehiculoSelect").val();
     
                 // Validar que la placa tenga 3 dígitos
@@ -141,7 +140,7 @@
                 }
     
                 // Agregar el vehículo a la tabla correspondiente
-                const newRow = "<tr><td>" + placa + "</td><td>" + tipo + "</td><td>" + estado + "</td><td><form class='cambiar-estado-form' data-placa='" + placa + "'><select name='nuevo_estado'><option value='activo'>Activo</option><option value='mantenimiento'>Mantenimiento</option></select><button type='submit'>Cambiar Estado</button></form></td></tr>";
+                const newRow = "<tr><td>" + placa + "</td><td>" + tipo + "</td><td>" + estado + "</td><td><form class='cambiar-estado-form' data-placa='" + placa + "'><select name='nuevo_estado'><option value='activo'>Activo</option><option value='mantenimiento'>Mantenimiento</option></select><button type='button' class='cambiar-estado-button'>Cambiar Estado</button></form></td></tr>";
                 if (estado === 'activo') {
                     $("#active-vehicles").append(newRow);
                 } else if (estado === 'mantenimiento') {
@@ -149,17 +148,21 @@
                 }
     
                 // Realizar una solicitud POST al servidor para agregar el vehículo al JSON
-                // Aquí debes agregar el código para actualizar el archivo JSON en el servidor
-                // y agregar el nuevo vehículo.
+                $.post('/agregar_vehiculo', { placa: placa, nuevo_estado: estado, tipo: tipo }, function (data) {
+                    // Recargar la página para reflejar los cambios
+                    location.reload();
+                }).fail(function (error) {
+                    console.error('Error:', error);
+                });
     
                 // Limpia los campos del formulario
                 $("input[name='placa']").val("");
             });
     
-            // Captura el evento submit de los formularios de cambio de estado
-            $(".cambiar-estado-form").submit(function (event) {
+            // Captura el evento click de los botones para cambiar estado
+            $(document).on("click", ".cambiar-estado-button", function (event) {
                 event.preventDefault();
-                const form = $(this);
+                const form = $(this).closest('.cambiar-estado-form');
                 const placa = form.data('placa');
                 const nuevoEstado = form.find('select[name="nuevo_estado"]').val();
                 
@@ -173,8 +176,7 @@
     
                 // Realizar una solicitud POST al servidor para cambiar el estado
                 $.post(`/cambiar_estado/${placa}`, { nuevo_estado: nuevoEstado }, function (data) {
-                    // Recargar la página para reflejar los cambios
-                    location.reload();
+                    // No es necesario recargar la página, ya que los cambios se reflejan de inmediato
                 }).fail(function (error) {
                     console.error('Error:', error);
                 });
@@ -191,4 +193,5 @@
             }
         });
     </script>
-    
+</body>
+</html>

@@ -10,8 +10,13 @@ mantenimiento = FastAPI()
 ruta_json = os.path.join(os.path.dirname(__file__), 'buses.json')
 
 # Leer datos de vehículos desde el archivo JSON
-with open(ruta_json, 'r') as vehiculos_file:
-    vehiculos = json.load(vehiculos_file)
+def leer_vehiculos():
+    with open(ruta_json, 'r') as vehiculos_file:
+        return json.load(vehiculos_file)
+
+def guardar_vehiculos(vehiculos):
+    with open(ruta_json, 'w') as vehiculos_file:
+        json.dump(vehiculos, vehiculos_file, indent=4)
 
 # Configurar la clave secreta
 mantenimiento.secret_key = '001'
@@ -23,6 +28,7 @@ templates = Jinja2Templates(directory="MS-mantenimiento/templates")
 mantenimiento.mount("/static", StaticFiles(directory="MS-mantenimiento/static"), name="static")
 
 def actualizar_listas_de_vehiculos():
+    vehiculos = leer_vehiculos()
     # Lista separada para vehículos en estado "activo"
     vehiculos_activos = [vehiculo for vehiculo in vehiculos if vehiculo['estado'] == 'activo']
     
@@ -39,15 +45,13 @@ async def mostrar_tablas(request: Request):
 # Ruta para cambiar el estado de un vehículo
 @mantenimiento.post('/cambiar_estado/{placa}')
 async def cambiar_estado(placa: str, nuevo_estado: str = Form(...)):
+    vehiculos = leer_vehiculos()
     for vehiculo in vehiculos:
         if vehiculo['placa'] == placa:
             # Actualiza el estado del vehículo
             vehiculo['estado'] = nuevo_estado
 
-            vehiculos_activos, vehiculos_mantenimiento = actualizar_listas_de_vehiculos()
-
-    with open(ruta_json, 'w') as vehiculos_file:
-        json.dump(vehiculos, vehiculos_file, indent=4)
+    guardar_vehiculos(vehiculos)
 
     return RedirectResponse(url='/')
 
@@ -55,9 +59,10 @@ async def cambiar_estado(placa: str, nuevo_estado: str = Form(...)):
 @mantenimiento.post('/agregar_vehiculo')
 async def agregar_vehiculo(
         placa: str = Form(...),
-        estado: str = Form(..., name="nuevo_estado"),
+        nuevo_estado: str = Form(..., name="nuevo_estado"),
         tipo: str = Form(...)
     ):
+    vehiculos = leer_vehiculos()
     placas_existentes = [vehiculo['placa'] for vehiculo in vehiculos]
     if placa in placas_existentes:
         raise HTTPException(status_code=400, detail='La placa ya existe. Introduce una placa única.')
@@ -66,19 +71,14 @@ async def agregar_vehiculo(
     else:
         nuevo_vehiculo = {
             'placa': placa,
-            'estado': estado,
+            'estado': nuevo_estado,
             'tipo': tipo
         }
         vehiculos.append(nuevo_vehiculo)
 
-        vehiculos_activos, vehiculos_mantenimiento = actualizar_listas_de_vehiculos()
-
-        with open(ruta_json, 'w') as vehiculos_file:
-            # Escribe la lista de vehículos en el archivo JSON actualizado
-            json.dump(vehiculos, vehiculos_file, indent=4)
+        guardar_vehiculos(vehiculos)
 
     return RedirectResponse(url='/')
-
 
 if __name__ == '__main__':
     uvicorn.run(mantenimiento, host="127.0.0.1", port=8000)
