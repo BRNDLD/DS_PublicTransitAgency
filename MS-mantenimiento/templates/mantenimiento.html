@@ -42,7 +42,7 @@
             </tr>
         </thead>
         <tbody id="active-vehicles">
-            {% for vehiculo in datos if vehiculo.estado == 'activo' %}
+            {% for vehiculo in activos %}
                 <tr>
                     <td>{{ vehiculo.placa }}</td>
                     <td>{{ vehiculo.tipo }}</td>
@@ -72,7 +72,7 @@
             </tr>
         </thead>
         <tbody id="maintenance-vehicles">
-            {% for vehiculo in datos if vehiculo.estado == 'mantenimiento' %}
+            {% for vehiculo in mantenimiento %}
                 <tr>
                     <td>{{ vehiculo.placa }}</td>
                     <td>{{ vehiculo.tipo }}</td>
@@ -103,7 +103,7 @@
             <option value="mantenimiento">Mantenimiento</option>
         </select>
         
-        <label for="tipo">Tipo de Vehículo:</label>
+        <label for "tipo">Tipo de Vehículo:</label>
         <select name="tipo">
             <option value="bus">Bus</option>
             <option value="tren">Tren</option>
@@ -126,6 +126,14 @@
                 const form = $(this);
                 const placa = form.data('placa');
                 const nuevoEstado = form.find('select[name="nuevo_estado"]').val();
+                
+                // Mover el vehículo de una tabla a otra
+                const row = form.closest('tr');
+                if (nuevoEstado === 'mantenimiento') {
+                    $("#maintenance-vehicles").append(row);
+                } else if (nuevoEstado === 'activo') {
+                    $("#active-vehicles").append(row);
+                }
 
                 // Realizar una solicitud POST al servidor para cambiar el estado
                 $.post(`/cambiar_estado/${placa}`, { nuevo_estado: nuevoEstado }, function (data) {
@@ -142,7 +150,7 @@
 
             agregarButton.click(function (event) {
                 const placa = placaInput.val();
-                const placasExistentes = Array.from(document.querySelectorAll('td')).map(td => td.textContent);
+                const placasExistentes = Array.from(document.querySelectorAll('td:nth-child(1)')).map(td => td.textContent);
                 if (placasExistentes.includes(placa)) {
                     event.preventDefault();
                     showNotification('La placa ya existe. Introduce una placa única.');

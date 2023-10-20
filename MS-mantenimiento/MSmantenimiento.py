@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Form, Request
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import json, os, uvicorn
@@ -22,16 +22,29 @@ templates = Jinja2Templates(directory="MS-mantenimiento/templates")
 # Configurar la gestión de archivos estáticos para servir CSS y otros archivos estáticos
 mantenimiento.mount("/static", StaticFiles(directory="MS-mantenimiento/static"), name="static")
 
+def actualizar_listas_de_vehiculos():
+    # Lista separada para vehículos en estado "activo"
+    vehiculos_activos = [vehiculo for vehiculo in vehiculos if vehiculo['estado'] == 'activo']
+    
+    # Lista separada para vehículos en estado "mantenimiento"
+    vehiculos_mantenimiento = [vehiculo for vehiculo in vehiculos if vehiculo['estado'] == 'mantenimiento']
+    
+    return vehiculos_activos, vehiculos_mantenimiento
+
 @mantenimiento.get("/")
 async def mostrar_tablas(request: Request):
-    return templates.TemplateResponse("mantenimiento.html", {"request": request, "datos": vehiculos})
+    vehiculos_activos, vehiculos_mantenimiento = actualizar_listas_de_vehiculos()
+    return templates.TemplateResponse("mantenimiento.html", {"request": request, "activos": vehiculos_activos, "mantenimiento": vehiculos_mantenimiento})
 
 # Ruta para cambiar el estado de un vehículo
 @mantenimiento.post('/cambiar_estado/{placa}')
 async def cambiar_estado(placa: str, nuevo_estado: str = Form(...)):
     for vehiculo in vehiculos:
         if vehiculo['placa'] == placa:
+            # Actualiza el estado del vehículo
             vehiculo['estado'] = nuevo_estado
+
+            vehiculos_activos, vehiculos_mantenimiento = actualizar_listas_de_vehiculos()
 
     with open(ruta_json, 'w') as vehiculos_file:
         json.dump(vehiculos, vehiculos_file, indent=4)
@@ -58,10 +71,12 @@ async def agregar_vehiculo(
         }
         vehiculos.append(nuevo_vehiculo)
 
+        vehiculos_activos, vehiculos_mantenimiento = actualizar_listas_de_vehiculos()
+
         with open(ruta_json, 'w') as vehiculos_file:
             json.dump(vehiculos, vehiculos_file, indent=4)
 
     return RedirectResponse(url='/')
 
 if __name__ == '__main__':
-    uvicorn.run(mantenimiento, host="0.0.0.0", port=8000)
+    uvicorn.run(mantenimiento, host="127.0.0.1", port=8000)
