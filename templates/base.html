@@ -6,9 +6,12 @@
     <title>PTAGENCY</title>
     <style>
         body {
-            background-color: white; 
+            background-color: white;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; 
         }
 
         .container {
@@ -16,6 +19,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px 20px;
+            position: relative;
         }
 
         .logo {
@@ -23,20 +27,19 @@
         }
 
         .logo img {
-            width: 50px; /* Ancho de la imagen del logotipo (ajustar según tu preferencia) */
+            width: 50px;
             height: auto;
         }
 
         .buttons {
             display: flex;
-            justify-content: flex-end;
             align-items: center;
         }
 
         .button {
             padding: 10px 20px;
-            background-color: orange; /* Color de fondo naranja */
-            color: black; /* Texto en negro */
+            background-color: orange;
+            color: black;
             text-decoration: none;
             border: none;
             border-radius: 5px;
@@ -44,8 +47,16 @@
         }
 
         .login-button {
-            background-color: black; /* Color de fondo negro */
-            color: orange; /* Texto en naranja */
+            background-color: black;
+            color: orange;
+        }
+
+        .about-us {
+            position: absolute;
+            bottom: 10px; /* Distancia desde la parte inferior */
+            right: 20px; /* Distancia desde la derecha */
+            text-decoration: none;
+            color: orangered; /* Cambia el color a tu preferencia */
         }
     </style>
 </head>
@@ -61,6 +72,21 @@
             <a href="{{ url_for('signup') }}" class="button">Registrarse</a>
         </div>
     </div>
-    {% block content %}{% endblock %}
+    <div id="content" style="padding: 20px;">
+        {% block content %}{% endblock %}
+    </div>
+    <a id="about-us" href="{{ url_for('about')}}" class="about-us">Acerca De Nosotros</a>
+    <script>
+        window.addEventListener('load', function () {
+            const content = document.getElementById('content');
+            const aboutUs = document.getElementById('about-us');
+
+            if (content.scrollHeight > window.innerHeight) {
+                aboutUs.style.position = 'fixed';
+                aboutUs.style.bottom = '10px';
+                aboutUs.style.right = '20px';
+            }
+        });
+    </script>
 </body>
 </html>

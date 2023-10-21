@@ -73,5 +73,9 @@ async def precios(request: Request):
 async def pagos(request: Request):
     return templates.TemplateResponse("pagos.html", {"request": request})
 
+@app.get("/about")
+async def about(request: Request):
+    return templates.TemplateResponse("about.html", {"request": request})
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

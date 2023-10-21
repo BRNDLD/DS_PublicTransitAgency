@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .logo {
+        width: 60px;
+        height: auto;
+    }
+
+    .company-name {
+        font-weight: bold;
+        font-size: 60px;
+        margin-left: 10px;
+    }
+
+    .title-container {
+        font-size: 60px;
+        text-align: center;
+        padding: 0px;
+        margin-top: 0px;
+    }
+
+    .description-container {
+        text-align: justify;
+        padding: 10px;
+        max-width: 70%; 
+        margin: 0 auto; 
+        font-size: 20px
+    }
+
+    .team-title {
+        font-size: 60px; 
+        text-align: center;
+        padding: 0px;
+    }
+
+    .separator {
+        border-top: 1px solid #000;
+        margin: 20px 0;
+    }
+
+    .team-members-container {
+        display: flex;
+        justify-content: space-around; 
+        flex-wrap: wrap; 
+    }
+
+    .team-member {
+        background-color: orange(255, 165, 0, 0.3); 
+        padding: 20px;
+        text-align: center;
+        margin: 20px;
+        max-width: 30%;
+    }
+
+    .copyright-container {
+        text-align: center; /* Centro el texto */
+        font-weight: bold;  /* Aplico negrita */
+    }
+</style>
+
+<div class="title-container">
+    Acerca De Nosotros
+</div>
+<div class="separator"></div>
+<div class="logo-container">
+    <img src="{{ url_for('static', path='logotipo.png') }}" alt="PT AGENCY" class="logo">
+    <p class="company-name">PT AGENCY</p>
+</div>
+<div class="description-container">
+    PT AGENCY es una completa solución de gestión de transporte público que abarca una amplia variedad de opciones de movilidad. Nuestra plataforma se especializa en la administración eficiente de buses, trenes, taxis y servicios de transporte adaptado, además de ofrecer opciones para el transporte privado. Nuestra aplicación proporciona a los usuarios información actualizada sobre precios, rutas, opciones de pago y horarios, lo que les permite planificar sus viajes de manera conveniente. Además, ofrecemos un sistema de mantenimiento integral para garantizar que todos los vehículos en nuestra red funcionen de manera óptima y segura.
+</div>
+
+<div class="separator"></div>
+<div class="team-title">
+    Nuestro Equipo
+</div>
+
+<div class="team-members-container">
+    <div class="team-member">
+        <h2>Brandold Vega Perez</h2>
+        <p>Carrera: Ingeniería Sistemas y Computación</p>
+        <p>Correo: vegab@utb.edu.co</p>
+        <p>Fecha de Nacimiento: 19 de Marzo de 2003</p>
+        <p>GitHub: <a href="https://github.com/BRNDLD" target="_blank">github.com/BRNDLD</a></p>
+    </div>
+
+    <div class="team-member">
+        <h2>Michel Augusto Castellanos Severiche</h2>
+        <p>Carrera: Ingeniería Sistemas y Computación</p>
+        <p>Correo: castellanosm@utb.edu.co</p>
+        <p>Fecha de Nacimiento: 18 de Septiembre de 2002</p>
+        <p>GitHub: <a href="https://github.com/Michse017" target="_blank">github.com/Michse017</a></p>
+    </div>
+
+    <div class="team-member">
+        <h2>Andres Felipe Garcia Sosa</h2>
+        <p>Carrera: Ingeniería Sistemas y Computación</p>
+        <p>Correo: asosa@utb.edu.co</p>
+        <p>Fecha de Nacimiento: 25 de Julio de 2003</p>
+        <p>GitHub: <a href="https://github.com/Rex10202" target="_blank">github.com/Rex10202</a></p>
+    </div>
+</div>
+<div class="separator"></div>
+<div class="copyright-container">
+    <p>&copy; 2023 PT AGENCY. Todos los derechos reservados.</p>
+</div>
+{% endblock %}
