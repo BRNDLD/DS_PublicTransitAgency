@@ -37,7 +37,6 @@
             <tr>
                 <th>Número de Placa</th>
                 <th>Tipo de Vehículo</th>
-                <th>Estado</th>
                 <th>Acción</th>
             </tr>
         </thead>
@@ -46,7 +45,6 @@
                 <tr>
                     <td>{{ vehiculo.placa }}</td>
                     <td>{{ vehiculo.tipo }}</td>
-                    <td>{{ vehiculo.estado }}</td>
                     <td>
                         <form class="cambiar-estado-form" data-placa="{{ vehiculo.placa }}">
                             <select name="nuevo_estado">
@@ -67,7 +65,6 @@
             <tr>
                 <th>Número de Placa</th>
                 <th>Tipo de Vehículo</th>
-                <th>Estado</th>
                 <th>Acción</th>
             </tr>
         </thead>
@@ -76,7 +73,6 @@
                 <tr>
                     <td>{{ vehiculo.placa }}</td>
                     <td>{{ vehiculo.tipo }}</td>
-                    <td>{{ vehiculo.estado }}</td>
                     <td>
                         <form class="cambiar-estado-form" data-placa="{{ vehiculo.placa }}">
                             <select name="nuevo_estado">
@@ -91,29 +87,29 @@
         </tbody>
     </table>
 
-<!-- Formulario para agregar vehículos -->
-<h1>Agregar Vehículo</h1>
-<form id="agregarVehiculoForm" method="post" action="/agregar_vehiculo">
-    <label for="placa">Número de Placa (3 dígitos):</label>
-    <input type="text" name="placa" required pattern="[0-9]{3}" title="Debe tener 3 dígitos">
+    <!-- Formulario para agregar vehículos -->
+    <h1>Agregar Vehículo</h1>
+    <form id="agregarVehiculoForm" method="post" action="/agregar_vehiculo">
+        <label for="placa">Número de Placa (3 dígitos):</label>
+        <input type="text" name="placa" required pattern="[0-9]{3}" title="Debe tener 3 dígitos">
+        
+        <label for="tipo">Tipo de Vehículo:</label>
+        <select name="tipo" id="tipoVehiculoSelect">
+            <option value="bus">Bus</option>
+            <option value="tren">Tren</option>
+            <option value="taxis">Taxis</option>
+            <option value="adaptado">Vehículo Adaptado</option>
+            <option value="privado">Transporte Privado</option>
+        </select>
+        
+        <label for="estado">Estado del Vehículo:</label>
+        <select name="estado">
+            <option value="activo">Activo</option>
+            <option value="mantenimiento">Mantenimiento</option>
+        </select>
     
-    <label for="nuevo_estado">Estado:</label>
-    <select name="nuevo_estado">
-        <option value="activo">Activo</option>
-        <option value="mantenimiento">Mantenimiento</option>
-    </select>
-    
-    <label for="tipo">Tipo de Vehículo:</label>
-    <select name="tipo" id="tipoVehiculoSelect">
-        <option value="bus">Bus</option>
-        <option value="tren">Tren</option>
-        <option value="taxis">Taxis</option>
-        <option value="adaptado">Vehículo Adaptado</option>
-        <option value="privado">Transporte Privado</option>
-    </select>
-    
-    <button type="submit" id="agregarButton">Agregar Vehículo</button>
-</form>
+        <button type="submit" id="agregarButton">Agregar Vehículo</button>
+    </form>
 
     <div class="notification" id="notification" style="display: none;"></div>
 
@@ -124,8 +120,8 @@
             $("#agregarVehiculoForm").submit(function (event) {
                 event.preventDefault();
                 const placa = $("input[name='placa']").val();
-                const estado = $("select[name='nuevo_estado']").val();
                 const tipo = $("#tipoVehiculoSelect").val();
+                const estado = $("select[name='estado']").val();
     
                 // Validar que la placa tenga 3 dígitos
                 if (!/^\d{3}$/.test(placa)) {
@@ -140,7 +136,7 @@
                 }
     
                 // Agregar el vehículo a la tabla correspondiente
-                const newRow = "<tr><td>" + placa + "</td><td>" + tipo + "</td><td>" + estado + "</td><td><form class='cambiar-estado-form' data-placa='" + placa + "'><select name='nuevo_estado'><option value='activo'>Activo</option><option value='mantenimiento'>Mantenimiento</option></select><button type='button' class='cambiar-estado-button'>Cambiar Estado</button></form></td></tr>";
+                const newRow = "<tr><td>" + placa + "</td><td>" + tipo + "</td><td><form class='cambiar-estado-form' data-placa='" + placa + "'><select name='nuevo_estado'><option value='activo'>Activo</option><option value='mantenimiento'>Mantenimiento</option></select><button type='button' class='cambiar-estado-button'>Cambiar Estado</button></form></td></tr>";
                 if (estado === 'activo') {
                     $("#active-vehicles").append(newRow);
                 } else if (estado === 'mantenimiento') {
@@ -148,9 +144,8 @@
                 }
     
                 // Realizar una solicitud POST al servidor para agregar el vehículo al JSON
-                $.post('/agregar_vehiculo', { placa: placa, nuevo_estado: estado, tipo: tipo }, function (data) {
-                    // Recargar la página para reflejar los cambios
-                    location.reload();
+                $.post('/agregar_vehiculo', { placa: placa, tipo: tipo, estado: estado }, function (data) {
+                    // No es necesario recargar la página, ya que los cambios se reflejan de inmediato
                 }).fail(function (error) {
                     console.error('Error:', error);
                 });
