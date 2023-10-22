@@ -6,12 +6,12 @@
     },
     {
         "placa": "011",
-        "estado": "mantenimiento",
+        "estado": "activo",
         "tipo": "tren"
     },
     {
         "placa": "321",
-        "estado": "mantenimiento",
+        "estado": "activo",
         "tipo": "bus"
     },
     {
@@ -21,7 +21,7 @@
     },
     {
         "placa": "098",
-        "estado": "mantenimiento",
+        "estado": "activo",
         "tipo": "privado"
     },
     {
@@ -41,7 +41,7 @@
     },
     {
         "placa": "888",
-        "estado": "mantenimiento",
+        "estado": "activo",
         "tipo": "bus"
     },
     {

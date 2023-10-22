@@ -81,4 +81,4 @@ async def agregar_vehiculo(
     return RedirectResponse(url='/')
 
 if __name__ == '__main__':
-    uvicorn.run(mantenimiento, host="0.0.0.0", port=8000)
+    uvicorn.run(mantenimiento, port=8000)
