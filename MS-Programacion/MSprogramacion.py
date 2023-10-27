@@ -30,16 +30,13 @@ class Service(BaseModel):
     horario: str
 
 @app.post('/services/')
-async def create_service(
-    tipo: str = Form(...),
-    ruta: str = Form(...),
-    horario: str = Form(...)
-):
+async def create_service(service: Service):
+    # Aquí no es necesario validar manualmente, FastAPI maneja la validación automáticamente
     new_service = {
         'id': len(data) + 1,
-        'tipo': tipo,
-        'ruta': ruta,
-        'horario': horario,
+        'tipo': service.tipo,
+        'ruta': service.ruta,
+        'horario': service.horario,
     }
 
     # Agregar el nuevo servicio a la lista en memoria
