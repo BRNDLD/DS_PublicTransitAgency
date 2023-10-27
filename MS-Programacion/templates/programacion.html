@@ -13,6 +13,12 @@
         <h1>Gestión de Programación de Transporte</h1>
     </div>
     <form id="service-form">
+        <label for="nombre_ruta">Nombre de la Ruta:</label>
+        <input type="text" id="nombre_ruta" name="nombre_ruta" required><br>
+
+        <label for="placa_vehiculo">Placa del Vehículo:</label>
+        <input type="text" id="placa_vehiculo" name="placa_vehiculo" required><br>
+
         <label for="tipo">Tipo de Servicio:</label>
         <select id="tipo" name="tipo">
             <option value="Autobús">Autobús</option>
@@ -22,17 +28,10 @@
             <option value="Privado">Privado</option>
         </select><br>
 
-        <label for="ruta">Ruta:</label>
-        <select id="ruta" name="ruta">
-            <option value="X-103">X-103</option>
-            <option value="X-102">X-102</option>
-            <option value="X-104">X-104</option>
-        </select><br>
-
         <label for="horario">Horario:</label>
         <input type="time" id="horario" name="horario" required><br>
 
-        <button type="submit">Agregar Servicio</button>
+        <button type="submit">Agregar Ruta</button>
     </form>
 
     <div id="service-list-container">
@@ -72,12 +71,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Función para cargar y mostrar servicios de transporte
             function loadTransportServices() {
                 fetch('/services')
                     .then(response => response.json())
                     .then(data => {
-                        // Limpiar las listas
                         document.getElementById('autobus-services').innerHTML = '';
                         document.getElementById('tren-services').innerHTML = '';
                         document.getElementById('taxis-services').innerHTML = '';
@@ -85,10 +82,30 @@
                         document.getElementById('privado-services').innerHTML = '';
 
                         data.forEach(service => {
-                            const li = document.createElement('li');
-                            li.innerText = `Ruta: ${service.ruta}, Horario: ${service.horario}`;
+    const li = document.createElement('li');
+    li.innerText = `Placa: ${service.placa_vehiculo}, Ruta: ${service.nombre_ruta}, Horario: ${service.horario}`;
 
-                            // Determinar el tipo de servicio y agregarlo a la lista correspondiente
+    // Agregar botón para eliminar con atributo de datos personalizados
+    const deleteButton = document.createElement('button');
+    deleteButton.innerText = "Eliminar";
+    deleteButton.setAttribute('data-service-id', service.id); // Establecer el atributo data-service-id
+
+    deleteButton.addEventListener('click', function () {
+        const serviceId = this.getAttribute('data-service-id'); // Obtener el ID del servicio
+        fetch(`/services/${serviceId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Puedes realizar alguna acción adicional aquí después de eliminar el servicio
+            // Por ejemplo, volver a cargar la lista de servicios
+            loadTransportServices();
+        });
+    });
+
+    li.appendChild(deleteButton);
+
+                            // Resto del código (agregar a la lista correspondiente)
                             if (service.tipo === 'Autobús') {
                                 document.getElementById('autobus-services').appendChild(li);
                             } else if (service.tipo === 'Tren') {
@@ -104,10 +121,8 @@
                     });
             }
 
-            // Cargar servicios al cargar la página
             loadTransportServices();
 
-            // Manejar el envío del formulario
             const serviceForm = document.getElementById('service-form');
             serviceForm.addEventListener('submit', function (e) {
                 e.preventDefault();
@@ -117,7 +132,8 @@
                     method: 'POST',
                     body: JSON.stringify({
                         tipo: formData.get('tipo'),
-                        ruta: formData.get('ruta'),
+                        nombre_ruta: formData.get('nombre_ruta'),
+                        placa_vehiculo: formData.get('placa_vehiculo'),
                         horario: formData.get('horario')
                     }),
                     headers: {
@@ -126,10 +142,7 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        // Limpiar el formulario
                         serviceForm.reset();
-
-                        // Volver a cargar y mostrar servicios actualizados
                         loadTransportServices();
                     });
             });

@@ -1,6 +1,6 @@
 import os
 import json
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, HTTPException, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -24,34 +24,48 @@ def load_data():
 
 data = load_data()
 
+
 class Service(BaseModel):
     tipo: str
-    ruta: str
+    placa_vehiculo: str
+    nombre_ruta: str
     horario: str
+
 
 @app.post('/services/')
 async def create_service(service: Service):
-    # Aquí no es necesario validar manualmente, FastAPI maneja la validación automáticamente
     new_service = {
         'id': len(data) + 1,
         'tipo': service.tipo,
-        'ruta': service.ruta,
+        'placa_vehiculo': service.placa_vehiculo,
+        'nombre_ruta': service.nombre_ruta,
         'horario': service.horario,
     }
-
-    # Agregar el nuevo servicio a la lista en memoria
     data.append(new_service)
-
-    # Actualizar el archivo JSON con la lista completa
     with open(ruta_json, 'w') as file:
         json.dump(data, file, indent=4)
-
     return {"message": "Servicio creado"}
-
 
 @app.get('/services/', response_model=list[Service])
 def get_services():
     return data
+
+@app.delete('/services/{service_id}/')
+async def delete_service(service_id: int):
+    global data
+    service_to_delete = None
+    for service in data:
+        if service['id'] == service_id:
+            service_to_delete = service
+            break
+    if service_to_delete:
+        data.remove(service_to_delete)
+        with open(ruta_json, 'w') as file:
+            json.dump(data, file, indent=4)
+        return {"message": "Servicio eliminado"}
+    else:
+        raise HTTPException(status_code=404, detail="Servicio no encontrado")
+
 
 @app.get('/')
 async def read_index(request: Request):
