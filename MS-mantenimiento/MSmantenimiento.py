@@ -2,24 +2,14 @@ from fastapi import FastAPI, HTTPException, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-import json, os, uvicorn
+from pymongo import MongoClient
 
 mantenimiento = FastAPI()
 
-# Define la ruta completa al archivo 'buses.json'
-ruta_json = os.path.join(os.path.dirname(__file__), 'buses.json')
-
-# Leer datos de vehículos desde el archivo JSON
-def leer_vehiculos():
-    with open(ruta_json, 'r') as vehiculos_file:
-        return json.load(vehiculos_file)
-
-def guardar_vehiculos(vehiculos):
-    with open(ruta_json, 'w') as vehiculos_file:
-        json.dump(vehiculos, vehiculos_file, indent=4)
-
-# Configurar la clave secreta
-mantenimiento.secret_key = '001'
+# Conectar a la base de datos MongoDB
+client = MongoClient("mongodb://localhost:27017")
+db = client["Vehiculos"]
+collection = db["vehiculos"]
 
 # Configurar la carpeta de plantillas para Jinja2
 templates = Jinja2Templates(directory="MS-mantenimiento/templates")
@@ -28,13 +18,8 @@ templates = Jinja2Templates(directory="MS-mantenimiento/templates")
 mantenimiento.mount("/static", StaticFiles(directory="MS-mantenimiento/static"), name="static")
 
 def actualizar_listas_de_vehiculos():
-    vehiculos = leer_vehiculos()
-    # Lista separada para vehículos en estado "activo"
-    vehiculos_activos = [vehiculo for vehiculo in vehiculos if vehiculo['estado'] == 'activo']
-    
-    # Lista separada para vehículos en estado "mantenimiento"
-    vehiculos_mantenimiento = [vehiculo for vehiculo in vehiculos if vehiculo['estado'] == 'mantenimiento']
-    
+    vehiculos_activos = list(collection.find({"estado": "activo"}))
+    vehiculos_mantenimiento = list(collection.find({"estado": "mantenimiento"}))
     return vehiculos_activos, vehiculos_mantenimiento
 
 @mantenimiento.get("/")
@@ -45,26 +30,20 @@ async def mostrar_tablas(request: Request):
 # Ruta para cambiar el estado de un vehículo
 @mantenimiento.post('/cambiar_estado/{placa}')
 async def cambiar_estado(placa: str, nuevo_estado: str = Form(...)):
-    vehiculos = leer_vehiculos()
-    for vehiculo in vehiculos:
-        if vehiculo['placa'] == placa:
-            # Actualiza el estado del vehículo
-            vehiculo['estado'] = nuevo_estado
-
-    guardar_vehiculos(vehiculos)
-
+    collection.update_one({"placa": placa}, {"$set": {"estado": nuevo_estado}})
     return RedirectResponse(url='/')
 
-# Ruta y formulario para agregar vehículos
+from bson import ObjectId  # Importa la clase ObjectId desde la biblioteca bson
+
+# ...
+
 @mantenimiento.post('/agregar_vehiculo')
 async def agregar_vehiculo(
-        placa: str = Form(...),
-        nuevo_estado: str = Form(..., name="nuevo_estado"),
-        tipo: str = Form(...)
-    ):
-    vehiculos = leer_vehiculos()
-    placas_existentes = [vehiculo['placa'] for vehiculo in vehiculos]
-    if placa in placas_existentes:
+    placa: str = Form(...),
+    nuevo_estado: str = Form(..., name="nuevo_estado"),
+    tipo: str = Form(...)
+):
+    if collection.count_documents({"placa": placa}) > 0:
         raise HTTPException(status_code=400, detail='La placa ya existe. Introduce una placa única.')
     elif len(placa) != 3:
         raise HTTPException(status_code=400, detail='La placa debe tener exactamente 3 dígitos.')
@@ -74,11 +53,10 @@ async def agregar_vehiculo(
             'estado': nuevo_estado,
             'tipo': tipo
         }
-        vehiculos.append(nuevo_vehiculo)
-
-        guardar_vehiculos(vehiculos)
+        collection.insert_one(nuevo_vehiculo)  # No incluyas "_id" en el documento a insertar
 
     return RedirectResponse(url='/')
 
 if __name__ == '__main__':
-    uvicorn.run(mantenimiento, port=8000)
+    import uvicorn
+    uvicorn.run(mantenimiento, host="127.0.0.1", port=8000)

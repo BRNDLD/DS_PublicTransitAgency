@@ -102,8 +102,8 @@
             <option value="privado">Transporte Privado</option>
         </select>
         
-        <label for="estado">Estado del Vehículo:</label>
-        <select name="estado">
+        <label for="nuevo_estado">Estado del Vehículo:</label>
+        <select name="nuevo_estado">
             <option value="activo">Activo</option>
             <option value="mantenimiento">Mantenimiento</option>
         </select>
@@ -121,7 +121,7 @@
                 event.preventDefault();
                 const placa = $("input[name='placa']").val();
                 const tipo = $("#tipoVehiculoSelect").val();
-                const estado = $("select[name='estado']").val();
+                const estado = $("select[name='nuevo_estado']").val();
     
                 // Validar que la placa tenga 3 dígitos
                 if (!/^\d{3}$/.test(placa)) {
@@ -144,7 +144,7 @@
                 }
     
                 // Realizar una solicitud POST al servidor para agregar el vehículo al JSON
-                $.post('/agregar_vehiculo', { placa: placa, tipo: tipo, estado: estado }, function (data) {
+                $.post('/agregar_vehiculo', { placa: placa, tipo: tipo, nuevo_estado: estado }, function (data) {
                     // No es necesario recargar la página, ya que los cambios se reflejan de inmediato
                 }).fail(function (error) {
                     console.error('Error:', error);
