@@ -1,30 +1,9 @@
 [
     {
         "id": 1,
-        "tipo": "Autob\u00fas",
-        "placa_vehiculo": "ABC-123",
-        "nombre_ruta": "X-102",
-        "horario": "19:37"
-    },
-    {
-        "id": 2,
-        "tipo": "Tren",
-        "placa_vehiculo": "DEF-456",
-        "nombre_ruta": "C-001",
-        "horario": "04:53"
-    },
-    {
-        "id": 3,
-        "tipo": "Adaptado",
-        "placa_vehiculo": "ABC-123",
-        "nombre_ruta": "ABC-123",
-        "horario": "15:01"
-    },
-    {
-        "id": 4,
-        "tipo": "Taxis",
-        "placa_vehiculo": "ABC-123",
-        "nombre_ruta": "ABC-123",
-        "horario": "03:05"
+        "tipo": "privado",
+        "placa_vehiculo": "098",
+        "horario": "14:02",
+        "vehiculo": "privado - 098"
     }
 ]
