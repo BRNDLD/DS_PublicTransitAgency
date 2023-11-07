@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "tipo": "privado",
+        "placa_vehiculo": "098",
+        "horario": "14:02",
+        "vehiculo": "privado - 098",
+        "ruta": "x106"
+    },
+    {
+        "id": 2,
+        "tipo": "taxis",
+        "placa_vehiculo": "123",
+        "horario": "14:00",
+        "vehiculo": "taxi - 123",
+        "ruta": "x103"
+    },
+    {
+        "id": 3,
+        "tipo": "taxis",
+        "placa_vehiculo": "124",
+        "horario": "4:00",
+        "vehiculo": "taxi - 124",
+        "ruta": "x103"
+    }
+]

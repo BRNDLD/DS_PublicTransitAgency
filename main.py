@@ -7,6 +7,10 @@ from logic.usuario import User
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
+# Leer el archivo programacion.json
+with open("data/programacion.json", "r") as json_file:
+    programacion = json.load(json_file)
+
 # Montar la configuración para servir archivos estáticos
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -57,13 +61,10 @@ async def usuario(request: Request):
 async def admin(request: Request):
     return templates.TemplateResponse("panelAdmin.html", {"request": request, "admin_name": "Administrador"})
 
-@app.get("/horarios")
-async def horarios(request: Request):
-    return templates.TemplateResponse("horarios.html", {"request": request})
-
-@app.get("/rutas")
+@app.get("/usuario/rutas")
 async def rutas(request: Request):
-    return templates.TemplateResponse("rutas.html", {"request": request})
+    tipos_de_vehiculos = set(item["tipo"] for item in programacion)
+    return templates.TemplateResponse("rutas.html", {"request": request, "programacion": programacion, "tipos_de_vehiculos": tipos_de_vehiculos})
 
 @app.get("/precios")
 async def precios(request: Request):

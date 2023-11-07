@@ -1,0 +1,25 @@
+{% extends "panelUsuario.html" %}
+
+{% block content %}
+<div style="text-align: center;">
+    <h1>Rutas de Vehículos</h1>
+
+    {% for tipo in tipos_de_vehiculos %}
+        <h2>{{ tipo }}</h2>
+        <table border="1" style="margin: 0 auto; font-size: 16px; background-color: #f5f5f5; border-collapse: collapse; width: 80%;">
+            <tr>
+                <th style="background-color: orange; color: #fff; padding: 10px;">Vehículo</th>
+                <th style="background-color: orange; color: #fff; padding: 10px;">Ruta</th>
+                <th style="background-color: orange; color: #fff; padding: 10px;">Horario</th>
+            </tr>
+            {% for vehiculo in programacion | selectattr("tipo", "eq", tipo) %}
+                <tr>
+                    <td style="padding: 10px;">{{ vehiculo.vehiculo }}</td>
+                    <td style="padding: 10px;">{{ vehiculo.ruta }}</td>
+                    <td style="padding: 10px;">{{ vehiculo.horario }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endfor %}
+</div>
+{% endblock %}
