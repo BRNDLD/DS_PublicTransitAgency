@@ -1,9 +1,18 @@
 [
     {
         "id": 1,
-        "tipo": "privado",
-        "placa_vehiculo": "098",
-        "horario": "14:02",
-        "vehiculo": "privado - 098"
+        "tipo": "tren",
+        "placa_vehiculo": "435",
+        "horario": "19:21",
+        "ruta": "X-103",
+        "vehiculo": "tren - 435"
+    },
+    {
+        "id": 2,
+        "tipo": "adaptado",
+        "placa_vehiculo": "111",
+        "horario": "05:00",
+        "ruta": "A-102",
+        "vehiculo": "adaptado - 111"
     }
 ]

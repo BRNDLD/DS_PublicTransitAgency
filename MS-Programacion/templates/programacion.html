@@ -1,130 +1,227 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Gestión de Programación de Transporte</title>
     <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
+
 <body>
     <div class="container text-center">
         <h1>Gestión de Programación de Transporte</h1>
-    </div>
 
-    <form id="service-form">
-        <label for="vehiculo">Seleccione un vehículo activo:</label>
-        <select id="vehiculo" name="vehiculo" required>
-            <option value="" disabled selected>Seleccionar un vehículo</option>
-            {% for vehicle in active_vehicles %}
-                <option value="{{ vehicle.tipo }} - {{ vehicle.placa }}">{{ vehicle.tipo }} - {{ vehicle.placa }}</option>
-            {% endfor %}
-        </select><br>
-
-        <label for="horario">Horario:</label>
-        <input type="time" id="horario" name="horario" required><br>
-
-        <button type="submit">Agregar Ruta</button>
-    </form>
-
-    <div id="service-list-container">
-        <div class="service-list">
-            <h2>Servicios de Autobús</h2>
-            <ul id="autobus-services">
-                <!-- Contenido de la lista de autobuses -->
-            </ul>
+        <!-- Sección para agregar y borrar rutas -->
+        <div>
+            <label for="new-route">Nueva Ruta:</label>
+            <input type="text" id="new-route" name="new-route" placeholder="Ingrese nueva ruta">
+            <button id="add-route">Agregar Ruta</button>
+            <button id="delete-route">Borrar Ruta</button>
         </div>
 
-        <div class="service-list">
-            <h2>Servicios de Tren</h2>
-            <ul id="tren-services">
-                <!-- Contenido de la lista de trenes -->
-            </ul>
+        <!-- Sección para seleccionar una ruta existente -->
+        <div>
+            <label for="select-route">Seleccione una ruta existente:</label>
+            <select id="select-route" name="select-route">
+                <option value="" disabled selected>Seleccionar una ruta</option>
+                {% for route in routes %}
+                    <option value="{{ route }}">{{ route }}</option>
+                {% endfor %}
+            </select>
         </div>
 
-        <div class="service-list">
-            <h2>Servicios de Taxis</h2>
-            <ul id="taxis-services">
-                <!-- Contenido de la lista de taxis -->
-            </ul>
+        <!-- Formulario para agregar servicios -->
+        <form id="service-form">
+            <label for="vehiculo">Seleccione un vehículo activo:</label>
+            <select id="vehiculo" name="vehiculo" required>
+                <option value="" disabled selected>Seleccionar un vehículo</option>
+                {% for vehicle in active_vehicles %}
+                    <option value="{{ vehicle.tipo }} - {{ vehicle.placa }}">{{ vehicle.tipo }} - {{ vehicle.placa }}</option>
+                {% endfor %}
+            </select><br>
+
+            <label for="horario">Horario:</label>
+            <input type="time" id="horario" name="horario" required><br>
+
+            <button type="submit">Agregar Horario</button>
+        </form>
+
+        <!-- Contenido de las listas de servicios -->
+        <div id="service-list-container">
+            <div class="service-list" id="autobus-list">
+                <h2>Servicios de Autobús</h2>
+                <ul id="autobus-services"></ul>
+            </div>
+
+            <div class="service-list" id="tren-list">
+                <h2>Servicios de Tren</h2>
+                <ul id="tren-services"></ul>
+            </div>
+
+            <div class="service-list" id="taxis-list">
+                <h2>Servicios de Taxis</h2>
+                <ul id="taxis-services"></ul>
+            </div>
+
+            <div class="service-list" id="adaptado-list">
+                <h2>Servicios de Adaptados</h2>
+                <ul id="adaptado-services"></ul>
+            </div>
+
+            <div class="service-list" id="privado-list">
+                <h2>Servicios de Privados</h2>
+                <ul id="privado-services"></ul>
+            </div>
         </div>
 
-        <div class="service-list">
-            <h2>Servicios de Adaptados</h2>
-            <ul id="adaptado-services">
-                <!-- Contenido de la lista de adaptados -->
-            </ul>
-        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Cargar rutas al cargar la página
+                loadRoutes();
 
-        <div class="service-list">
-            <h2>Servicios de Privados</h2>
-            <ul id="privado-services">
-                <!-- Contenido de la lista de privados -->
-            </ul>
-        </div>
-    </div>
+                // Cargar servicios al cargar la página
+                loadTransportServices();
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            function loadTransportServices() {
-                fetch('/services')
-                    .then(response => response.json())
-                    .then(data => {
-                        const autobusServices = document.getElementById('autobus-services');
-                        const trenServices = document.getElementById('tren-services');
-                        const taxisServices = document.getElementById('taxis-services');
-                        const adaptadoServices = document.getElementById('adaptado-services');
-                        const privadoServices = document.getElementById('privado-services');
-    
-                        autobusServices.innerHTML = '';
-                        trenServices.innerHTML = '';
-                        taxisServices.innerHTML = '';
-                        adaptadoServices.innerHTML = '';
-                        privadoServices.innerHTML = '';
-    
-                        data.forEach(service => {
-                            const li = document.createElement('li');
-                            li.innerText = `Placa: ${service.placa_vehiculo}, Horario: ${service.horario}`;
-    
-                            if (service.tipo === 'bus') {
-                                autobusServices.appendChild(li);
-                            } else if (service.tipo === 'tren') {
-                                trenServices.appendChild(li);
-                            } else if (service.tipo === 'taxis') {
-                                taxisServices.appendChild(li);
-                            } else if (service.tipo === 'adaptado') {
-                                adaptadoServices.appendChild(li);
-                            } else if (service.tipo === 'privado') {
-                                privadoServices.appendChild(li);
-                            }
+                const serviceForm = document.getElementById('service-form');
+                serviceForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const formData = new FormData(serviceForm);
+
+                    fetch('/services', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            vehiculo: formData.get('vehiculo'),
+                            horario: formData.get('horario'),
+                            ruta: document.getElementById('select-route').value
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            serviceForm.reset();
+                            loadTransportServices();
                         });
-                    });
-            }
-    
-            loadTransportServices();
-    
-            const serviceForm = document.getElementById('service-form');
-            serviceForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-                const formData = new FormData(serviceForm);
-    
-                fetch('/services', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        vehiculo: formData.get('vehiculo'),
-                        horario: formData.get('horario')
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
+                });
+
+                document.getElementById('add-route').addEventListener('click', addRoute);
+                document.getElementById('delete-route').addEventListener('click', deleteRoute);
+
+                function loadRoutes() {
+                    fetch('/routes')
+                        .then(response => response.json())
+                        .then(routes => {
+                            const selectRoute = document.getElementById('select-route');
+                            selectRoute.innerHTML = '<option value="" disabled selected>Seleccionar una ruta</option>';
+                            routes.forEach(route => {
+                                selectRoute.innerHTML += `<option value="${route}">${route}</option>`;
+                            });
+                        });
+                }
+
+                function addRoute() {
+                    const selectRoute = document.getElementById('select-route');
+                    const newRouteInput = document.getElementById('new-route');
+                    const newRoute = newRouteInput.value.trim();
+
+                    if (newRoute) {
+                        selectRoute.innerHTML += `<option value="${newRoute}">${newRoute}</option>`;
+                        selectRoute.value = newRoute;
+                        newRouteInput.value = '';
+
+                        // Agrega la nueva ruta al servidor
+                        fetch('/routes', {
+                            method: 'POST',
+                            body: JSON.stringify({ route: newRoute }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(routes => {
+                                console.log(routes);
+                            });
                     }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        serviceForm.reset();
-                        loadTransportServices();
-                    });
+                }
+
+                function deleteRoute() {
+                    const selectRoute = document.getElementById('select-route');
+                    const selectedRoute = selectRoute.value;
+                    if (selectedRoute && confirm(`¿Está seguro de borrar la ruta "${selectedRoute}"?`)) {
+                        selectRoute.remove(selectRoute.selectedIndex);
+                        selectRoute.value = '';
+
+                        // Elimina la ruta del servidor
+                        fetch('/routes', {
+                            method: 'DELETE',
+                            body: JSON.stringify({ route: selectedRoute }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(routes => {
+                                console.log(routes);
+                            });
+                    }
+                }
+
+                function loadTransportServices() {
+                    fetch('/services')
+                        .then(response => response.json())
+                        .then(data => {
+                            // Limpiar las listas existentes
+                            clearServiceLists();
+
+                            // Agrupar servicios por tipo de vehículo
+                            const groupedServices = groupServicesByType(data);
+
+                            // Llenar las listas con los servicios agrupados
+                            fillServiceLists(groupedServices);
+                        });
+                }
+
+                function clearServiceLists() {
+                    const serviceListContainer = document.getElementById('service-list-container');
+                    const serviceLists = serviceListContainer.getElementsByClassName('service-list');
+                    for (const serviceList of serviceLists) {
+                        const serviceListContent = serviceList.getElementsByTagName('ul')[0];
+                        serviceListContent.innerHTML = '';
+                    }
+                }
+
+                function groupServicesByType(services) {
+                    const groupedServices = {
+                        'Autobús': [],
+                        'Tren': [],
+                        'Taxis': [],
+                        'Adaptados': [],
+                        'Privados': []
+                    };
+
+                    for (const service of services) {
+                        const vehicleType = service.tipo;
+                        if (groupedServices.hasOwnProperty(vehicleType)) {
+                            groupedServices[vehicleType].push(service);
+                        }
+                    }
+
+                    return groupedServices;
+                }
+
+                function fillServiceLists(groupedServices) {
+                    for (const [vehicleType, services] of Object.entries(groupedServices)) {
+                        const serviceList = document.getElementById(`${vehicleType.toLowerCase()}-services`);
+                        for (const service of services) {
+                            serviceList.innerHTML += `<li>${service.horario} - Ruta: ${service.ruta || 'Sin ruta'}</li>`;
+                        }
+                    }
+                }
             });
-        });
-    </script>
-    
+        </script>
+    </div>
 </body>
+
 </html>
