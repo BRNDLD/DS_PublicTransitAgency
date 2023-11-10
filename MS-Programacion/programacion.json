@@ -1,18 +1,26 @@
 [
     {
         "id": 1,
-        "tipo": "tren",
-        "placa_vehiculo": "435",
-        "horario": "19:21",
+        "tipo": "bus",
+        "placa_vehiculo": "123",
+        "horario": "13:02",
         "ruta": "X-103",
-        "vehiculo": "tren - 435"
+        "vehiculo": "bus - 123"
     },
     {
         "id": 2,
-        "tipo": "adaptado",
-        "placa_vehiculo": "111",
-        "horario": "05:00",
+        "tipo": "bus",
+        "placa_vehiculo": "888",
+        "horario": "05:02",
         "ruta": "A-102",
-        "vehiculo": "adaptado - 111"
+        "vehiculo": "bus - 888"
+    },
+    {
+        "id": 3,
+        "tipo": "privado",
+        "placa_vehiculo": "098",
+        "horario": "12:02",
+        "ruta": "X-102",
+        "vehiculo": "privado - 098"
     }
 ]
