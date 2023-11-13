@@ -2,6 +2,7 @@ import os
 import json
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -52,6 +53,7 @@ def save_rutas():
 rutas = load_rutas()
 
 class Service(BaseModel):
+    tipo: str
     vehiculo: str
     horario: str
     ruta: Optional[str] = None
@@ -94,7 +96,6 @@ def get_routes():
     return rutas
 
 # Ruta para agregar una nueva ruta
-# Ruta para agregar una nueva ruta
 @app.post('/routes/')
 async def add_route(new_route: dict):
     try:
@@ -105,6 +106,24 @@ async def add_route(new_route: dict):
         return rutas
     except Exception as e:
         print(f"Error adding route: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@app.delete('/services/{service_id}/')
+async def delete_service(service_id: int):
+    try:
+        service_to_delete = next((service for service in data if service["id"] == service_id), None)
+        if service_to_delete:
+            data.remove(service_to_delete)
+
+            # Guardar los cambios en el archivo JSON de programación
+            with open(programacion_json, 'w') as file:
+                json.dump(data, file, indent=4)
+
+            return service_to_delete
+        else:
+            raise HTTPException(status_code=422, detail="El servicio no existe.")
+    except Exception as e:
+        print(f"Error deleting service: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 # Ruta para eliminar una ruta
@@ -128,9 +147,14 @@ async def delete_route(route: dict):
 async def get_services():
     return data
 
+@app.get('/programacion-json/', response_class=FileResponse)
+async def get_programacion_json():
+    return programacion_json
+
 # Ruta para la página principal
-@app.get('/')
+@app.get('/', response_class=HTMLResponse)
 async def read_index(request: Request):
+    data = load_data()  # Cargar los datos desde el archivo JSON
     return templates.TemplateResponse("programacion.html", {"request": request, "data": data, "active_vehicles": active_vehicles, "routes": rutas})
 
 if __name__ == "__main__":

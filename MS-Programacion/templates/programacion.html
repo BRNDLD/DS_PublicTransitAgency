@@ -6,6 +6,7 @@
     <title>Gestión de Programación de Transporte</title>
     <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 
 <body>
@@ -26,18 +27,20 @@
             <select id="select-route" name="select-route">
                 <option value="" disabled selected>Seleccionar una ruta</option>
                 {% for route in routes %}
-                    <option value="{{ route }}">{{ route }}</option>
+                <option value="{{ route }}">{{ route }}</option>
                 {% endfor %}
             </select>
         </div>
 
         <!-- Formulario para agregar servicios -->
         <form id="service-form">
+            <input type="hidden" id="tipo" name="tipo" value="">
             <label for="vehiculo">Seleccione un vehículo activo:</label>
             <select id="vehiculo" name="vehiculo" required>
                 <option value="" disabled selected>Seleccionar un vehículo</option>
                 {% for vehicle in active_vehicles %}
-                    <option value="{{ vehicle.tipo }} - {{ vehicle.placa }}">{{ vehicle.tipo }} - {{ vehicle.placa }}</option>
+                <option value="{{ vehicle.tipo }} - {{ vehicle.placa }}">{{ vehicle.tipo }} - {{ vehicle.placa }}
+                </option>
                 {% endfor %}
             </select><br>
 
@@ -47,67 +50,89 @@
             <button type="submit">Agregar Horario</button>
         </form>
 
-        <!-- Contenido de las listas de servicios -->
-        <div id="service-list-container">
-            <div class="service-list" id="autobus-list">
-                <h2>Servicios de Autobús</h2>
-                <ul id="autobus-services"></ul>
-            </div>
-
-            <div class="service-list" id="tren-list">
-                <h2>Servicios de Tren</h2>
-                <ul id="tren-services"></ul>
-            </div>
-
-            <div class="service-list" id="taxis-list">
-                <h2>Servicios de Taxis</h2>
-                <ul id="taxis-services"></ul>
-            </div>
-
-            <div class="service-list" id="adaptado-list">
-                <h2>Servicios de Adaptados</h2>
-                <ul id="adaptado-services"></ul>
-            </div>
-
-            <div class="service-list" id="privado-list">
-                <h2>Servicios de Privados</h2>
-                <ul id="privado-services"></ul>
-            </div>
-        </div>
+        <!-- Tabla para mostrar servicios -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Vehículo</th>
+                    <th>Ruta</th>
+                    <th>Horario</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in data %}
+                <tr>
+                    <td>{{ service.vehiculo }}</td>
+                    <td>{{ service.ruta }}</td>
+                    <td>{{ service.horario }}</td>
+                    <td><button class="delete-service" data-id="{{ service.id }}">Eliminar</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                // Cargar rutas al cargar la página
-                loadRoutes();
-
-                // Cargar servicios al cargar la página
-                loadTransportServices();
-
-                const serviceForm = document.getElementById('service-form');
-                serviceForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    const formData = new FormData(serviceForm);
-
-                    fetch('/services', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            vehiculo: formData.get('vehiculo'),
-                            horario: formData.get('horario'),
-                            ruta: document.getElementById('select-route').value
-                        }),
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    })
+                function loadProgramacionJsonServices() {
+                    fetch('/programacion-json')
                         .then(response => response.json())
                         .then(data => {
-                            serviceForm.reset();
-                            loadTransportServices();
-                        });
-                });
+                            // Limpiar la tabla
+                            clearTable();
 
-                document.getElementById('add-route').addEventListener('click', addRoute);
-                document.getElementById('delete-route').addEventListener('click', deleteRoute);
+                            // Llenar la tabla con los servicios
+                            data.forEach(service => {
+                                addServiceToTable(service);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error fetching programacion.json:', error);
+                        });
+                }
+
+                function clearTable() {
+                    const tbody = document.querySelector('.table tbody');
+                    if (tbody) {
+                        tbody.innerHTML = '';
+                    }
+                }
+
+                function addServiceToTable(service) {
+                    const tbody = document.querySelector('.table tbody');
+                    if (tbody) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+            <td>${service.vehiculo}</td>
+            <td>${service.ruta}</td>
+            <td>${service.horario}</td>
+            <td><button class="delete-service" data-id="${service.id}">Eliminar</button></td>
+        `;
+                        tbody.appendChild(tr);
+                    }
+                }
+                // Manejar la eliminación de servicios
+                document.querySelector('.table').addEventListener('click', function (e) {
+                    if (e.target.classList.contains('delete-service')) {
+                        const serviceId = e.target.dataset.id;
+                        // Lógica para eliminar el servicio con el id `serviceId`
+                        // Puedes usar fetch para enviar una solicitud DELETE al servidor
+                        // y luego volver a cargar los servicios con loadProgramacionJsonServices
+                        // ...
+                        // Ejemplo:
+                        fetch(`/services/${serviceId}/`, {
+                            method: 'DELETE'
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                // Vuelve a cargar los servicios después de la eliminación
+                                loadProgramacionJsonServices();
+                            })
+                            .catch(error => {
+                                console.error('Error deleting service:', error);
+                            });
+                    }
+                });
 
                 function loadRoutes() {
                     fetch('/routes')
@@ -168,57 +193,38 @@
                     }
                 }
 
-                function loadTransportServices() {
-                    fetch('/services')
+                const serviceForm = document.getElementById('service-form');
+                serviceForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(serviceForm);
+                    formData.set('tipo', formData.get('vehiculo').split(' - ')[0]);  // Establecer el valor del campo oculto 'tipo'
+
+                    fetch('/services', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            tipo: formData.get('tipo'),
+                            vehiculo: formData.get('vehiculo'),
+                            horario: formData.get('horario'),
+                            ruta: document.getElementById('select-route').value
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
                         .then(response => response.json())
                         .then(data => {
-                            // Limpiar las listas existentes
-                            clearServiceLists();
-
-                            // Agrupar servicios por tipo de vehículo
-                            const groupedServices = groupServicesByType(data);
-
-                            // Llenar las listas con los servicios agrupados
-                            fillServiceLists(groupedServices);
+                            serviceForm.reset();
+                            loadProgramacionJsonServices();
+                        })
+                        .catch(error => {
+                            console.error('Error submitting service form:', error);
                         });
-                }
+                });
 
-                function clearServiceLists() {
-                    const serviceListContainer = document.getElementById('service-list-container');
-                    const serviceLists = serviceListContainer.getElementsByClassName('service-list');
-                    for (const serviceList of serviceLists) {
-                        const serviceListContent = serviceList.getElementsByTagName('ul')[0];
-                        serviceListContent.innerHTML = '';
-                    }
-                }
-
-                function groupServicesByType(services) {
-                    const groupedServices = {
-                        'Autobús': [],
-                        'Tren': [],
-                        'Taxis': [],
-                        'Adaptados': [],
-                        'Privados': []
-                    };
-
-                    for (const service of services) {
-                        const vehicleType = service.tipo;
-                        if (groupedServices.hasOwnProperty(vehicleType)) {
-                            groupedServices[vehicleType].push(service);
-                        }
-                    }
-
-                    return groupedServices;
-                }
-
-                function fillServiceLists(groupedServices) {
-                    for (const [vehicleType, services] of Object.entries(groupedServices)) {
-                        const serviceList = document.getElementById(`${vehicleType.toLowerCase()}-services`);
-                        for (const service of services) {
-                            serviceList.innerHTML += `<li>${service.horario} - Ruta: ${service.ruta || 'Sin ruta'}</li>`;
-                        }
-                    }
-                }
+                document.getElementById('add-route').addEventListener('click', addRoute);
+                document.getElementById('delete-route').addEventListener('click', deleteRoute);
+                loadRoutes();
             });
         </script>
     </div>
