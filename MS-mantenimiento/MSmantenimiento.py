@@ -7,7 +7,7 @@ from pymongo import MongoClient
 mantenimiento = FastAPI()
 
 # Conectar a la base de datos MongoDB
-client = MongoClient("mongodb://localhost:27017")
+client = MongoClient("mongodb+srv://Miche17:auristeamo32@cluster0.6ojhz7l.mongodb.net/")
 db = client["Vehiculos"]
 collection = db["vehiculos"]
 

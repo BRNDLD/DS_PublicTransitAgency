@@ -34,18 +34,24 @@
 
         <!-- Formulario para agregar servicios -->
         <form id="service-form">
-            <input type="hidden" id="tipo" name="tipo" value="">
             <label for="vehiculo">Seleccione un vehículo activo:</label>
             <select id="vehiculo" name="vehiculo" required>
                 <option value="" disabled selected>Seleccionar un vehículo</option>
                 {% for vehicle in active_vehicles %}
-                <option value="{{ vehicle.tipo }} - {{ vehicle.placa }}">{{ vehicle.tipo }} - {{ vehicle.placa }}
-                </option>
+                <option value="{{ vehicle.tipo }} - {{ vehicle.placa }}">{{ vehicle.tipo }} - {{ vehicle.placa }}</option>
                 {% endfor %}
             </select><br>
 
             <label for="horario">Horario:</label>
             <input type="time" id="horario" name="horario" required><br>
+
+            <label for="select-route-form">Seleccione una ruta (opcional):</label>
+            <select id="select-route-form" name="ruta">
+                <option value="" disabled selected>Seleccionar una ruta</option>
+                {% for route in routes %}
+                <option value="{{ route }}">{{ route }}</option>
+                {% endfor %}
+            </select><br>
 
             <button type="submit">Agregar Horario</button>
         </form>
@@ -66,7 +72,7 @@
                     <td>{{ service.vehiculo }}</td>
                     <td>{{ service.ruta }}</td>
                     <td>{{ service.horario }}</td>
-                    <td><button class="delete-service" data-id="{{ service.id }}">Eliminar</button></td>
+                    <td><button class="delete-service" data-id="{{ service._id }}">Eliminar</button></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -75,7 +81,7 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 function loadProgramacionJsonServices() {
-                    fetch('/programacion-json')
+                    fetch('/services')  // Cambia la ruta según tu endpoint de servicios en FastAPI
                         .then(response => response.json())
                         .then(data => {
                             // Limpiar la tabla
@@ -87,7 +93,7 @@
                             });
                         })
                         .catch(error => {
-                            console.error('Error fetching programacion.json:', error);
+                            console.error('Error fetching services:', error);
                         });
                 }
 
@@ -103,46 +109,63 @@
                     if (tbody) {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-            <td>${service.vehiculo}</td>
-            <td>${service.ruta}</td>
-            <td>${service.horario}</td>
-            <td><button class="delete-service" data-id="${service.id}">Eliminar</button></td>
-        `;
+                            <td>${service.vehiculo}</td>
+                            <td>${service.ruta}</td>
+                            <td>${service.horario}</td>
+                            <td><button class="delete-service" data-id="${service._id}">Eliminar</button></td>
+                        `;
                         tbody.appendChild(tr);
                     }
                 }
+
                 // Manejar la eliminación de servicios
                 document.querySelector('.table').addEventListener('click', function (e) {
                     if (e.target.classList.contains('delete-service')) {
                         const serviceId = e.target.dataset.id;
-                        // Lógica para eliminar el servicio con el id `serviceId`
-                        // Puedes usar fetch para enviar una solicitud DELETE al servidor
-                        // y luego volver a cargar los servicios con loadProgramacionJsonServices
-                        // ...
-                        // Ejemplo:
-                        fetch(`/services/${serviceId}/`, {
-                            method: 'DELETE'
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                // Vuelve a cargar los servicios después de la eliminación
-                                loadProgramacionJsonServices();
+
+                        // Asegurémonos de que serviceId no sea undefined antes de enviar la solicitud DELETE
+                        if (serviceId) {
+                            // Lógica para eliminar el servicio con el id `serviceId`
+                            fetch(`/services/${serviceId}/`, {
+                                method: 'DELETE'
                             })
-                            .catch(error => {
-                                console.error('Error deleting service:', error);
-                            });
+                                .then(response => response.json())
+                                .then(data => {
+                                    // Vuelve a cargar los servicios después de la eliminación
+                                    loadProgramacionJsonServices();
+                                })
+                                .catch(error => {
+                                    console.error('Error deleting service:', error);
+                                });
+                        } else {
+                            console.error('Error: serviceId is undefined');
+                        }
                     }
-                });
+
+});
+
 
                 function loadRoutes() {
                     fetch('/routes')
                         .then(response => response.json())
                         .then(routes => {
+                            console.log("Routes from server:", routes);
+
                             const selectRoute = document.getElementById('select-route');
                             selectRoute.innerHTML = '<option value="" disabled selected>Seleccionar una ruta</option>';
+
                             routes.forEach(route => {
-                                selectRoute.innerHTML += `<option value="${route}">${route}</option>`;
+                                // Imprime toda la información del objeto para ayudar a depurar
+                                console.log("Route object:", route);
+
+                                // Asegúrate de que el campo "item" existe antes de usarlo
+                                if (route && route.item) {
+                                    selectRoute.innerHTML += `<option value="${route.item}">${route.item}</option>`;
+                                }
                             });
+                        })
+                        .catch(error => {
+                            console.error('Error fetching routes:', error);
                         });
                 }
 
@@ -206,7 +229,7 @@
                             tipo: formData.get('tipo'),
                             vehiculo: formData.get('vehiculo'),
                             horario: formData.get('horario'),
-                            ruta: document.getElementById('select-route').value
+                            ruta: document.getElementById('select-route-form').value
                         }),
                         headers: {
                             'Content-Type': 'application/json'
@@ -225,6 +248,7 @@
                 document.getElementById('add-route').addEventListener('click', addRoute);
                 document.getElementById('delete-route').addEventListener('click', deleteRoute);
                 loadRoutes();
+                loadProgramacionJsonServices();
             });
         </script>
     </div>
