@@ -66,14 +66,6 @@ async def rutas(request: Request):
     tipos_de_vehiculos = set(item["tipo"] for item in programacion)
     return templates.TemplateResponse("rutas.html", {"request": request, "programacion": programacion, "tipos_de_vehiculos": tipos_de_vehiculos})
 
-@app.get("/precios")
-async def precios(request: Request):
-    return templates.TemplateResponse("precios.html", {"request": request})
-
-@app.get("/pagos")
-async def pagos(request: Request):
-    return templates.TemplateResponse("pagos.html", {"request": request})
-
 @app.get("/about")
 async def about(request: Request):
     return templates.TemplateResponse("about.html", {"request": request})

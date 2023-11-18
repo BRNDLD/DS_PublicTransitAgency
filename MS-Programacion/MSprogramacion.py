@@ -10,7 +10,6 @@ import uvicorn
 
 app = FastAPI()
 templates = Jinja2Templates(directory="MS-Programacion/templates")
-app.mount("/static", StaticFiles(directory="MS-Programacion/static"), name="static")
 
 programacion_json = os.path.join(os.path.dirname(__file__), 'programacion.json')
 buses_json = os.path.join(os.path.dirname(__file__), 'buses.json')
