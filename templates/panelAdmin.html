@@ -109,7 +109,7 @@
                 <button class="dropdown-button">{{ admin_name }}</button>
                 <div class="dropdown-content">
                     <a href="" class="dropdown-button">Perfil</a>
-                    <a href="" class="dropdown-button">Lista de Usuarios</a>
+                    <a href="{{ url_for('pasajeros') }}" class="dropdown-button">Lista de Usuarios</a>
                     <a href="{{ url_for('login') }}" class="dropdown-button logout-button">Cerrar Sesión</a>
                 </div>
             </div>

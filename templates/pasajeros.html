@@ -1,0 +1,70 @@
+{% extends "panelAdmin.html" %}
+{% block content %}
+
+<style>
+    table {
+        width: 50%;
+        margin: auto;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: center;
+    }
+
+    th {
+        background-color: orange;
+    }
+
+    .historial-table {
+        display: none;
+    }
+</style>
+
+<h2>Lista de Usuarios</h2>
+<table border="1">
+    <tr>
+        <th>Nombre de Usuario</th>
+    </tr>
+    {% for username in usernames %}
+    <tr>
+        <td>
+            <a href="#" onclick="toggleHistorial('{{ username }}')">{{ username }}</a>
+            <table border="1" class="historial-table" id="{{ username }}-historial">
+                <tr>
+                    <th>Servicio</th>
+                    <th>Precio</th>
+                </tr>
+                {% set user_historial = historial.get(username, []) %}
+                {% if user_historial %}
+                    {% for item in user_historial %}
+                    <tr>
+                        <td>{{ item.servicio }}</td>
+                        <td>{{ item.precio }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="2">Sin historial</td>
+                    </tr>
+                {% endif %}
+            </table>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+    function toggleHistorial(username) {
+        var tableId = username + "-historial";
+        var table = document.getElementById(tableId);
+        if (table.style.display === "none") {
+            table.style.display = "table";
+        } else {
+            table.style.display = "none";
+        }
+    }
+</script>
+
+{% endblock %}
