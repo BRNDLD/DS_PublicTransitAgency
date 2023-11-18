@@ -2,10 +2,14 @@ import os, json, uvicorn
 from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi import HTTPException
 from logic.usuario import User
+from logic.MSpasajeros import PasajeroController
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
+
+pasajero_controller = PasajeroController("data/users.json", "data/historial.json")
 
 # Leer el archivo programacion.json
 with open("data/programacion.json", "r") as json_file:
@@ -61,18 +65,24 @@ async def usuario(request: Request):
 async def admin(request: Request):
     return templates.TemplateResponse("panelAdmin.html", {"request": request, "admin_name": "Administrador"})
 
+# Nueva ruta para la lista de pasajeros y detalles del historial
+@app.get("/admin/pasajeros", response_model=dict)
+async def pasajeros(request: Request):
+    all_historial = pasajero_controller.get_all_historial()
+    usernames = pasajero_controller.get_usernames()
+    selected_username = request.query_params.get("username", "")
+    historial = all_historial.get(selected_username, [])
+    return templates.TemplateResponse("pasajeros.html", {"request": request, "usernames": usernames, "selected_username": selected_username, "historial": all_historial})
+
+@app.get("/admin/pasajeros/{username}", response_model=dict)
+async def pasajero_details(request: Request, username: str):
+    all_historial = pasajero_controller.get_all_historial()
+    return templates.TemplateResponse("pasajeros.html", {"request": request, "usernames": pasajero_controller.get_usernames(), "historial": all_historial})
+
 @app.get("/usuario/rutas")
 async def rutas(request: Request):
     tipos_de_vehiculos = set(item["tipo"] for item in programacion)
     return templates.TemplateResponse("rutas.html", {"request": request, "programacion": programacion, "tipos_de_vehiculos": tipos_de_vehiculos})
-
-@app.get("/precios")
-async def precios(request: Request):
-    return templates.TemplateResponse("precios.html", {"request": request})
-
-@app.get("/pagos")
-async def pagos(request: Request):
-    return templates.TemplateResponse("pagos.html", {"request": request})
 
 @app.get("/about")
 async def about(request: Request):

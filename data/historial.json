@@ -1,0 +1,10 @@
+{
+    "usuario1": [
+        {"servicio": "Ruta A", "precio": 10},
+        {"servicio": "Ruta B", "precio": 15}
+    ],
+    "usuario3": [
+        {"servicio": "Ruta A", "precio": 10},
+        {"servicio": "Ruta B", "precio": 15}
+    ]
+}

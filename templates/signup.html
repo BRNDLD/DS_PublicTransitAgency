@@ -14,10 +14,6 @@
             <div class="form-field">
                 <input type="password" name="confirm_password" placeholder="Confirmar Contraseña" required>
             </div>
-            <div class="form-field">
-                <input type="text" name="code" placeholder="Código (solo para administradores)">
-                <img src="{{ url_for('static', path='advertencia.png') }}" alt="Advertencia" class="tooltip" data-tooltip="El código debe tener el formato 3 números y 3 letras.">
-            </div>
             <button type="submit">Registrarse</button>
         </form>
         {% if error %}

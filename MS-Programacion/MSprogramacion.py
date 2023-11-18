@@ -12,7 +12,6 @@ import uvicorn
 
 app = FastAPI()
 templates = Jinja2Templates(directory="MS-Programacion/templates")
-app.mount("/static", StaticFiles(directory="MS-Programacion/static"), name="static")
 
 # Conexión con la base de datos MongoDB
 client = MongoClient("mongodb+srv://Miche17:auristeamo32@cluster0.6ojhz7l.mongodb.net/")
