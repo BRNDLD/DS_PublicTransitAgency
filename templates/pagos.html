@@ -8,7 +8,7 @@
     <p>Ruta: {{ servicio.ruta }}</p>
     <p>Precio: {{ servicio.precio }}</p>
 
-    <form action="/usuario/pagos/{{ servicio.id }}/comprar" method="post">
+    <form action="/usuario/{{ user_name }}/pagos/{{ servicio.id }}/comprar" method="post">
         <label for="username">Nombre de usuario:</label><br>
         <input type="text" id="username" name="username"><br>
         <label for="password">Contraseña:</label><br>

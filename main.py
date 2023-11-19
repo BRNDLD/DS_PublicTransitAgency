@@ -127,17 +127,120 @@ async def signup_post(request: Request, username: str = Form(...), password: str
     return templates.TemplateResponse("signup.html", {"request": request, "error": None, "success": "Registro exitoso. Ahora puedes iniciar sesión."})
 
 
-@app.get("/usuario")
-async def usuario(request: Request):
+@app.get("/usuario/{username}")
+async def usuario(request: Request, username: str):
     """
     User panel endpoint.
 
     :param request: FastAPI request object
     :type request: Request
+    :param username: The username of the user
+    :type username: str
     :return: TemplateResponse for the user panel
     :rtype: TemplateResponse
     """
-    return templates.TemplateResponse("panelUsuario.html", {"request": request, "user_name": "Usuario"})
+    return templates.TemplateResponse("panelUsuario.html", {"request": request, "user_name": username})
+
+@app.get("/usuario/{username}/historial")
+async def historial(request: Request, username: str):
+    """
+    Historial endpoint for the user panel.
+
+    :param request: FastAPI request object
+    :type request: Request
+    :param username: The username of the user
+    :type username: str
+    :return: TemplateResponse for the historial user panel
+    :rtype: TemplateResponse
+    """
+    if username is None:
+        raise HTTPException(status_code=400, detail="Username is required")
+    return templates.TemplateResponse("historial.html", {"request": request, "historial": pasajero_controller.get_historial_by_username(username), "user_name": username})
+
+
+@app.get("/usuario/{username}/precios", response_model=dict)
+async def precios(request: Request, username: str):
+    """
+    Endpoint de precios para el panel de usuario.
+
+    :param request: Objeto de solicitud FastAPI
+    :type request: Request
+    :param username: El nombre de usuario del usuario
+    :type username: str
+    :return: TemplateResponse para el panel de precios del usuario
+    :rtype: TemplateResponse
+    """
+    with open("data/precios.json", "r") as json_file:
+        precios_data = json.load(json_file)
+
+    return templates.TemplateResponse("precios.html", {"request": request, "precios_data": precios_data, "user_name": username})
+
+
+@app.get("/usuario/{username}/pagos/{precio_id}")
+async def pagos(request: Request, username: str, precio_id: int):
+    """
+    Payments endpoint for the user panel.
+
+    :param request: FastAPI request object
+    :type request: Request
+    :param username: The username of the user
+    :type username: str
+    :param precio_id: Price ID
+    :type precio_id: int
+    :return: TemplateResponse for the payments user panel
+    :rtype: TemplateResponse
+    """
+    precio_data = pasajero_controller.get_precio_by_id(precio_id)
+    return templates.TemplateResponse("pagos.html", {"request": request, "servicio": precio_data, "user_name": username})
+
+
+@app.post("/usuario/{username}/pagos/{precio_id}/comprar")
+async def comprar(request: Request, username: str, precio_id: int, password: str = Form(...), tarjeta: str = Form(...), fecha_expiracion: str = Form(...), cvv: str = Form(...)):
+    """
+    Buy post endpoint for the user panel.
+
+    :param request: FastAPI request object
+    :type request: Request
+    :param username: User's username
+    :type username: str
+    :param precio_id: Price ID
+    :type precio_id: int
+    :param password: User's password
+    :type password: str
+    :param tarjeta: Credit card number
+    :type tarjeta: str
+    :param fecha_expiracion: Credit card expiration date
+    :type fecha_expiracion: str
+    :param cvv: Credit card CVV
+    :type cvv: str
+    :return: RedirectResponse to user panel
+    :rtype: RedirectResponse
+    """
+    if user_manager.authenticate(username, password):
+        servicio = pasajero_controller.get_precio_by_id(precio_id)
+
+        if username and password and tarjeta and fecha_expiracion and cvv:
+            pasajero_controller.add_to_historial(username, servicio)
+
+            return RedirectResponse(url=f"/usuario/{username}", status_code=303)
+
+    return RedirectResponse(url=f"/usuario/{username}/pagos/{precio_id}", status_code=303)
+
+
+@app.get("/usuario/{username}/rutas")
+async def rutas(request: Request, username: str):
+    """
+    Endpoint de rutas para el panel de usuario.
+
+    :param request: Objeto de solicitud FastAPI
+    :type request: Request
+    :param username: El nombre de usuario del usuario
+    :type username: str
+    :return: TemplateResponse para el panel de rutas del usuario
+    :rtype: TemplateResponse
+    """
+    tipos_de_vehiculos = set(item["tipo"] for item in programacion)
+    return templates.TemplateResponse("rutas.html", {"request": request, "programacion": programacion, "tipos_de_vehiculos": tipos_de_vehiculos, "user_name": username})
 
 
 @app.get("/admin")
@@ -184,20 +287,6 @@ async def pasajero_details(request: Request, username: str):
     """
     all_historial = pasajero_controller.get_all_historial()
     return templates.TemplateResponse("pasajeros.html", {"request": request, "usernames": pasajero_controller.get_usernames(), "historial": all_historial})
-
-
-@app.get("/usuario/rutas")
-async def rutas(request: Request):
-    """
-    Rutas endpoint for the user panel.
-
-    :param request: FastAPI request object
-    :type request: Request
-    :return: TemplateResponse for the rutas user panel
-    :rtype: TemplateResponse
-    """
-    tipos_de_vehiculos = set(item["tipo"] for item in programacion)
-    return templates.TemplateResponse("rutas.html", {"request": request, "programacion": programacion, "tipos_de_vehiculos": tipos_de_vehiculos})
 
 
 @app.get("/admin/modificarPrecios", response_model=dict)
@@ -264,71 +353,6 @@ async def eliminar_precio(request: Request, programacion_id: int):
     """
     pasajero_controller.delete_precio_by_id(programacion_id)
     return RedirectResponse(url="/admin/modificarPrecios")
-
-
-@app.get("/usuario/precios", response_model=dict)
-async def precios(request: Request):
-    """
-    Precios endpoint for the user panel.
-
-    :param request: FastAPI request object
-    :type request: Request
-    :return: TemplateResponse for the precios user panel
-    :rtype: TemplateResponse
-    """
-    with open("data/precios.json", "r") as json_file:
-        precios_data = json.load(json_file)
-
-    return templates.TemplateResponse("precios.html", {"request": request, "precios_data": precios_data})
-
-
-@app.get("/usuario/pagos/{precio_id}")
-async def pagos(request: Request, precio_id: int):
-    """
-    Pagos endpoint for the user panel.
-
-    :param request: FastAPI request object
-    :type request: Request
-    :param precio_id: Precio ID
-    :type precio_id: int
-    :return: TemplateResponse for the pagos user panel
-    :rtype: TemplateResponse
-    """
-    precio_data = pasajero_controller.get_precio_by_id(precio_id)
-    return templates.TemplateResponse("pagos.html", {"request": request, "servicio": precio_data})
-
-
-@app.post("/usuario/pagos/{precio_id}/comprar")
-async def comprar(request: Request, precio_id: int, username: str = Form(...), password: str = Form(...), tarjeta: str = Form(...), fecha_expiracion: str = Form(...), cvv: str = Form(...)):
-    """
-    Comprar post endpoint for the user panel.
-
-    :param request: FastAPI request object
-    :type request: Request
-    :param precio_id: Precio ID
-    :type precio_id: int
-    :param username: User's username
-    :type username: str
-    :param password: User's password
-    :type password: str
-    :param tarjeta: Credit card number
-    :type tarjeta: str
-    :param fecha_expiracion: Credit card expiration date
-    :type fecha_expiracion: str
-    :param cvv: Credit card CVV
-    :type cvv: str
-    :return: RedirectResponse to usuario panel
-    :rtype: RedirectResponse
-    """
-    if user_manager.authenticate(username, password):
-        servicio = pasajero_controller.get_precio_by_id(precio_id)
-
-        if username and password and tarjeta and fecha_expiracion and cvv:
-            pasajero_controller.add_to_historial(username, servicio)
-
-            return RedirectResponse(url="/usuario", status_code=303)
-
-    return RedirectResponse(url=f"/usuario/pagos/{precio_id}", status_code=303)
 
 
 @app.get("/about")

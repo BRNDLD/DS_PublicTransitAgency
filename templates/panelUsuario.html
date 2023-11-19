@@ -95,14 +95,14 @@
 <body>
     <div class="container">
         <h1 class="logo">
-            <a href="{{ url_for('usuario') }}" style="text-decoration: none;">
+            <a href="{{ url_for('usuario', username=user_name) }}" style="text-decoration: none;">
                 <img src="{{ url_for('static', path='logotipo.png') }}" alt="PT AGENCY" title="PT AGENCY">
             </a>
         </h1>
         <div class="buttons">
-            <a href="{{ url_for('rutas') }}" class="button">Rutas</a>
-            <a href="{{ url_for('precios') }}" class="button">Precios</a>
-            <a href="" class="dropdown-button">Historial</a>
+            <a href="{{ url_for('rutas', username=user_name) }}" class="button">Rutas</a>
+            <a href="{{ url_for('precios', username=user_name) }}" class="button">Precios</a>
+            <a href="{{ url_for('historial', username=user_name) }}" class="dropdown-button">Historial</a>
         </div>
         <div class="user-info">
             <div class="dropdown">

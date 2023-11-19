@@ -1,0 +1,55 @@
+{% extends "panelUsuario.html" %}
+
+{% block content %}
+    <style>
+        h2 {
+            text-align: center;
+        }
+
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: orange;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+    </style>
+
+    <h2>Historial de {{ user_name }}</h2>
+
+    <table border="1" class="historial-table">
+        <tr>
+            <th>Servicio</th>
+            <th>Precio</th>
+        </tr>
+        {% if historial %}
+            {% for item in historial %}
+                <tr>
+                    <td>{{ item.tipo }} - {{ item.placa_vehiculo }} - {{ item.horario }} - {{ item.vehiculo }} - {{ item.ruta }}</td>
+                    <td>{{ item.precio }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="2">Sin historial</td>
+            </tr>
+        {% endif %}
+    </table>
+{% endblock %}
