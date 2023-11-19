@@ -1,5 +1,4 @@
-from multiprocessing import connection
-import ssl
+import certifi
 from fastapi import FastAPI, HTTPException, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -17,7 +16,7 @@ client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.n
 db = client["Vehiculos"]
 collection = db["vehiculos"]
 
-client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/?tls=true", tls=True, tlsAllowInvalidCertificates=True)
+client = pymongo.MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/", tlsCAFile=certifi.where())
 
 # Configurar la carpeta de plantillas para Jinja2
 templates = Jinja2Templates(directory="MS-mantenimiento/templates")
