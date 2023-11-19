@@ -48,7 +48,7 @@ async def create_service(service: Service):
         print(f"Error creating service: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-@app.get('/services/', response_model=list[Service])
+@app.get('/services/', response_model=List[Service])
 async def get_services():
     return list(collection_programacion.find())
 
@@ -127,9 +127,6 @@ async def read_index(request: Request):
         print(f"Error in read_index: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
 
 
 
