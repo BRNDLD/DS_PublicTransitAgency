@@ -10,7 +10,7 @@ from pymongo import MongoClient
 mantenimiento = FastAPI()
 
 # Conectar a la base de datos MongoDB
-client = MongoClient("mongodb+srv://Miche17:auristeamo32@cluster0.6ojhz7l.mongodb.net/")
+client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/")
 db = client["Vehiculos"]
 collection = db["vehiculos"]
 
