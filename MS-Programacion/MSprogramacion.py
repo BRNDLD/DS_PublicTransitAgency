@@ -48,7 +48,7 @@ async def create_service(service: Service):
         print(f"Error creating service: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-@app.get('/services/', response_model=list[Service])
+@app.get('/services/', response_model=List[Service])
 async def get_services():
     return list(collection_programacion.find())
 
