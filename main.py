@@ -161,13 +161,13 @@ async def historial(request: Request, username: str):
 @app.get("/usuario/{username}/precios", response_model=dict)
 async def precios(request: Request, username: str):
     """
-    Endpoint de precios para el panel de usuario.
+    Prices endpoint for the user panel.
 
-    :param request: Objeto de solicitud FastAPI
+    :param request: FastAPI request object
     :type request: Request
-    :param username: El nombre de usuario del usuario
+    :param username: The username of the user
     :type username: str
-    :return: TemplateResponse para el panel de precios del usuario
+    :return: TemplateResponse for the user's price panel
     :rtype: TemplateResponse
     """
     with open("data/precios.json", "r") as json_file:
@@ -230,13 +230,13 @@ async def comprar(request: Request, username: str, precio_id: int, password: str
 @app.get("/usuario/{username}/rutas")
 async def rutas(request: Request, username: str):
     """
-    Endpoint de rutas para el panel de usuario.
+    Routes endpoint for the user panel.
 
-    :param request: Objeto de solicitud FastAPI
+    :param request: FastAPI request object
     :type request: Request
-    :param username: El nombre de usuario del usuario
+    :param username: The username of the user
     :type username: str
-    :return: TemplateResponse para el panel de rutas del usuario
+    :return: TemplateResponse for the user's routes panel
     :rtype: TemplateResponse
     """
     tipos_de_vehiculos = set(item["tipo"] for item in programacion)
