@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, HTTPException
 import logging
 from pymongo import MongoClient
+import pymongo
 
 #app name
 mantenimiento = FastAPI()
