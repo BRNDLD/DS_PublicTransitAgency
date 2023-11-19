@@ -4,10 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, HTTPException
 import logging
-import ssl
 from pymongo import MongoClient
-
-client = MongoClient("your_connection_string", ssl_cert_reqs=ssl.CERT_NONE)
 
 #app name
 mantenimiento = FastAPI()
