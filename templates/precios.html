@@ -1,0 +1,54 @@
+{% extends "panelUsuario.html" %}
+
+{% block content %}
+    <style>
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: orange;
+        }
+
+        h2 {
+            text-align: center;
+            color: orange;
+        }
+    </style>
+
+    <h2>Precios Disponibles</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <th>Placa Vehículo</th>
+                <th>Horario</th>
+                <th>Ruta</th>
+                <th>Precio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for _, precio_data in precios_data.items() %}
+                <tr>
+                    <td>{{ precio_data.id }}</td>
+                    <td>{{ precio_data.tipo }}</td>
+                    <td>{{ precio_data.placa_vehiculo }}</td>
+                    <td>{{ precio_data.horario }}</td>
+                    <td>{{ precio_data.ruta }}</td>
+                    <td>{{ precio_data.precio }}</td>
+                    <td><a href="/usuario/pagos/{{ precio_data.id }}">Comprar Ticket</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

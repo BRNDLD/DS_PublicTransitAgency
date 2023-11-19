@@ -108,6 +108,22 @@ async def eliminar_precio(request: Request, programacion_id: int):
     pasajero_controller.delete_precio_by_id(programacion_id)
     return RedirectResponse(url="/admin/modificarPrecios")
 
+# Nueva ruta para la lista de precios
+@app.get("/usuario/precios", response_model=dict)
+async def precios(request: Request):
+    # Leer el archivo precios.json
+    with open("data/precios.json", "r") as json_file:
+        precios_data = json.load(json_file)
+
+    return templates.TemplateResponse("precios.html", {"request": request, "precios_data": precios_data})
+
+# Nueva ruta para la compra de tickets
+@app.get("/usuario/pagos/{precio_id}")
+async def usuario_pagos(request: Request, precio_id: int):
+    # Aquí puedes implementar la lógica de compra de tickets
+    # (por ejemplo, mostrar un formulario de pago, procesar la transacción, etc.)
+    return templates.TemplateResponse("precios.html", {"request": request, "precio_id": precio_id})
+
 @app.get("/about")
 async def about(request: Request):
     return templates.TemplateResponse("about.html", {"request": request})
