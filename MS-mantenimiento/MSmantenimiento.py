@@ -1,3 +1,4 @@
+import ssl
 from fastapi import FastAPI, HTTPException, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -15,6 +16,11 @@ client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.n
 db = client["Vehiculos"]
 collection = db["vehiculos"]
 
+cluster = MongoClient(
+    "url",
+    ssl=True,
+    ssl_cert_reqs=ssl.CERT_NONE,
+)
 
 # Configurar la carpeta de plantillas para Jinja2
 templates = Jinja2Templates(directory="MS-mantenimiento/templates")
