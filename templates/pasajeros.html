@@ -20,12 +20,14 @@
     .historial-table {
         display: none;
     }
+
     h2 {
-            text-align: center;
-        }
+        text-align: center;
+        color: orange;
+    }
 </style>
 
-<h2 style="color: orange;">Lista de Usuarios</h2>
+<h2>Lista de Usuarios</h2>
 <table border="1">
     <tr>
         <th>Nombre de Usuario</th>
@@ -43,7 +45,7 @@
                 {% if user_historial %}
                     {% for item in user_historial %}
                     <tr>
-                        <td>{{ item.servicio }}</td>
+                        <td>{{ item.tipo }} - {{ item.placa_vehiculo }} - {{ item.horario }} - {{ item.vehiculo }} - {{ item.ruta }}</td>
                         <td>{{ item.precio }}</td>
                     </tr>
                     {% endfor %}

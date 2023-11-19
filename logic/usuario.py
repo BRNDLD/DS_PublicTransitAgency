@@ -11,34 +11,52 @@ class User:
         """
         Initialize a User object.
 
-        Loads user and admin data from JSON files and initializes the object.
+        Loads user, admin and historial data from JSON files and initializes the object.
 
         :returns: User object
         :rtype: User
         """
-        self.users, self.admin = self.load_data()
+        self.users, self.admin, self.historial = self.load_data()
 
     def load_data(self):
         """
-        Load user and admin data from JSON files.
+        Load user, admin and historial data from JSON files.
 
-        :returns: Tuple containing user and admin data
-        :rtype: Tuple[dict, dict]
+        :returns: Tuple containing user, admin and historial data
+        :rtype: Tuple[dict, dict, dict]
         """
         with open(os.path.join("data", "users.json"), 'r') as users_file:
             users = json.load(users_file)
         with open(os.path.join("data", "admin.json"), 'r') as admin_file:
             admin = json.load(admin_file)
-        return users, admin
+        with open(os.path.join("data", "historial.json"), 'r') as historial_file:
+            historial = json.load(historial_file)
+        return users, admin, historial
 
     def save_data(self):
         """
-        Save user and admin data to JSON files.
+        Save user, admin and historial data to JSON files.
         """
         with open(os.path.join("data", "users.json"), 'w') as users_file:
             json.dump(self.users, users_file)
         with open(os.path.join("data", "admin.json"), 'w') as admin_file:
             json.dump(self.admin, admin_file)
+        with open(os.path.join("data", "historial.json"), 'w') as historial_file:
+            json.dump(self.historial, historial_file)
+
+    def authenticate(self, username, password):
+        """
+        Authenticate a user or admin.
+
+        :param username: The username to authenticate.
+        :type username: str
+        :param password: The password to authenticate.
+        :type password: str
+        :returns: True if the authentication is successful, False otherwise.
+        :rtype: bool
+        """
+        return (username in self.users and self.users[username] == password) or \
+               (username in self.admin and self.admin[username]['password'] == password)
 
     def validate_username(self, username):
         """
@@ -127,3 +145,26 @@ class User:
             return "Registro exitoso. Ahora puedes iniciar sesión."
         else:
             return "Las contraseñas no coinciden."
+        
+    def add_to_historial(self, username, servicio):
+        """
+        Add a service to the user's history.
+
+        :param username: The username of the user.
+        :type username: str
+        :param servicio: The service to add to the history.
+        :type servicio: dict
+        """
+        # Asegúrate de que el usuario existe
+        if username not in self.users and username not in self.admin:
+            return "El usuario no existe."
+
+        # Asegúrate de que el usuario tiene un historial
+        if username not in self.historial:
+            self.historial[username] = []
+
+        # Agrega el servicio al historial
+        self.historial[username].append(servicio)
+
+        # Guarda los datos
+        self.save_data()

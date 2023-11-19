@@ -119,10 +119,28 @@ async def precios(request: Request):
 
 # Nueva ruta para la compra de tickets
 @app.get("/usuario/pagos/{precio_id}")
-async def usuario_pagos(request: Request, precio_id: int):
-    # Aquí puedes implementar la lógica de compra de tickets
-    # (por ejemplo, mostrar un formulario de pago, procesar la transacción, etc.)
-    return templates.TemplateResponse("precios.html", {"request": request, "precio_id": precio_id})
+async def pagos(request: Request, precio_id: int):
+    precio_data = pasajero_controller.get_precio_by_id(precio_id)
+    return templates.TemplateResponse("pagos.html", {"request": request, "servicio": precio_data})
+
+@app.post("/usuario/pagos/{precio_id}/comprar")
+async def comprar(request: Request, precio_id: int, username: str = Form(...), password: str = Form(...), tarjeta: str = Form(...), fecha_expiracion: str = Form(...), cvv: str = Form(...)):
+    # Verificar la autenticación del usuario
+    if user_manager.authenticate(username, password):
+        # Obtener el servicio
+        servicio = pasajero_controller.get_precio_by_id(precio_id)
+
+        # Verificar que todos los campos estén completos
+        if username and password and tarjeta and fecha_expiracion and cvv:
+            # Guardar la información en historial.json
+            pasajero_controller.add_to_historial(username, servicio)
+            
+            # Aquí puedes agregar la lógica de procesamiento de pago (por ejemplo, conexión con una pasarela de pago)
+            
+            return RedirectResponse(url="/usuario", status_code=303)
+
+    # En caso de autenticación fallida o campos incompletos, redirigir de nuevo a la página de pagos
+    return RedirectResponse(url=f"/usuario/pagos/{precio_id}", status_code=303)
 
 @app.get("/about")
 async def about(request: Request):
