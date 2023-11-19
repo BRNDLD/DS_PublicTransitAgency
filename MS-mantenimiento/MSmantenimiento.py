@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pymongo import MongoClient
 
+#app name
 mantenimiento = FastAPI()
 
 # Conectar a la base de datos MongoDB
