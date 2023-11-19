@@ -16,6 +16,8 @@ client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.n
 db = client["Vehiculos"]
 collection = db["vehiculos"]
 
+client = pymongo.MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/?tls=true", tlsCAFile=certifi.where())
+
 # Configurar la carpeta de plantillas para Jinja2
 templates = Jinja2Templates(directory="MS-mantenimiento/templates")
 
