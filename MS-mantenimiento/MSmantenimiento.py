@@ -1,3 +1,4 @@
+from multiprocessing import connection
 import ssl
 from fastapi import FastAPI, HTTPException, Form, Request
 from fastapi.responses import RedirectResponse
@@ -16,6 +17,7 @@ client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.n
 db = client["Vehiculos"]
 collection = db["vehiculos"]
 
+client = pymongo.MongoClient(connection, tlsCAFile=ssl.CertificateError.where())
 
 # Configurar la carpeta de plantillas para Jinja2
 templates = Jinja2Templates(directory="MS-mantenimiento/templates")
