@@ -9,11 +9,6 @@ from pymongo import MongoClient
 #app name
 mantenimiento = FastAPI()
 
-@mantenimiento.exception_handler(Exception)
-async def generic_exception_handler(request, exc):
-    logging.exception("Unhandled exception")
-    return {"detail": "Internal Server Error"}, 500
-
 # Conectar a la base de datos MongoDB
 client = MongoClient("mongodb+srv://Miche17:auristeamo32@cluster0.6ojhz7l.mongodb.net/")
 db = client["Vehiculos"]
