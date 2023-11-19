@@ -1,15 +1,22 @@
+import certifi
 from fastapi import FastAPI, HTTPException, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI, HTTPException
+import logging
 from pymongo import MongoClient
+import pymongo
 
+#app name
 mantenimiento = FastAPI()
 
 # Conectar a la base de datos MongoDB
-client = MongoClient("mongodb://localhost:27017")
+client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/?tls=true")
 db = client["Vehiculos"]
 collection = db["vehiculos"]
+
+client = pymongo.MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/?tls=true", tlsCAFile=certifi.where())
 
 # Configurar la carpeta de plantillas para Jinja2
 templates = Jinja2Templates(directory="MS-mantenimiento/templates")
@@ -57,6 +64,3 @@ async def agregar_vehiculo(
 
     return RedirectResponse(url='/')
 
-if __name__ == '__main__':
-    import uvicorn
-    uvicorn.run(mantenimiento, host="127.0.0.1", port=8000)
