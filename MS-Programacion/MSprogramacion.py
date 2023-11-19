@@ -14,7 +14,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory="MS-Programacion/templates")
 
 # Conexión con la base de datos MongoDB
-client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/")
+client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/?tls=true")
 db = client["Vehiculos"]
 collection_programacion = db["Programacion"]
 collection_rutas = db["Rutas"]

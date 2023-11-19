@@ -12,11 +12,9 @@ import pymongo
 mantenimiento = FastAPI()
 
 # Conectar a la base de datos MongoDB
-client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/")
+client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/?tls=true")
 db = client["Vehiculos"]
 collection = db["vehiculos"]
-
-client = pymongo.MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/", tlsCAFile=certifi.where())
 
 # Configurar la carpeta de plantillas para Jinja2
 templates = Jinja2Templates(directory="MS-mantenimiento/templates")
