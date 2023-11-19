@@ -128,8 +128,5 @@ async def read_index(request: Request):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
-
 
 
