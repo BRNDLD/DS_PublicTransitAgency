@@ -1,24 +1,87 @@
 {% extends "panelUsuario.html" %}
 
 {% block content %}
-    <h2>Compra de Ticket</h2>
-    <p>Servicio: {{ servicio.tipo }}</p>
-    <p>Placa del Vehículo: {{ servicio.placa_vehiculo }}</p>
-    <p>Horario: {{ servicio.horario }}</p>
-    <p>Ruta: {{ servicio.ruta }}</p>
-    <p>Precio: {{ servicio.precio }}</p>
+    <style>
+        /* Estilos para el formulario */
+        form {
+            width: 60%;
+            margin: auto;
+            margin-top: 20px;
+        }
 
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 6px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #FFA500; /* Naranja */
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Estilos para la tabla */
+        table {
+            width: 60%;
+            margin: auto;
+            margin-top: 20px;
+        }
+
+        th {
+            background-color: #FFA500; /* Naranja */
+            color: white;
+        }
+    </style>
+
+    <h2 style="text-align: center;">Compra de Ticket</h2>
+
+    <!-- Información del servicio en una tabla tradicional -->
+    <table>
+        <thead>
+            <tr>
+                <th>Servicio</th>
+                <th>Placa del Vehículo</th>
+                <th>Horario</th>
+                <th>Ruta</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ servicio.tipo }}</td>
+                <td>{{ servicio.placa_vehiculo }}</td>
+                <td>{{ servicio.horario }}</td>
+                <td>{{ servicio.ruta }}</td>
+                <td>{{ servicio.precio }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Formulario de compra -->
     <form action="/usuario/{{ user_name }}/pagos/{{ servicio.id }}/comprar" method="post">
-        <label for="username">Nombre de usuario:</label><br>
-        <input type="text" id="username" name="username"><br>
-        <label for="password">Contraseña:</label><br>
-        <input type="password" id="password" name="password"><br>
-        <label for="tarjeta">Número de Tarjeta:</label><br>
-        <input type="text" id="tarjeta" name="tarjeta"><br>
-        <label for="fecha_expiracion">Fecha de Expiración:</label><br>
-        <input type="text" id="fecha_expiracion" name="fecha_expiracion"><br>
-        <label for="cvv">CVV:</label><br>
-        <input type="text" id="cvv" name="cvv"><br>
+        <label for="username">Nombre de usuario:</label>
+        <input type="text" id="username" name="username">
+
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password">
+
+        <label for="tarjeta">Número de Tarjeta:</label>
+        <input type="text" id="tarjeta" name="tarjeta">
+
+        <label for="fecha_expiracion">Fecha de Expiración:</label>
+        <input type="text" id="fecha_expiracion" name="fecha_expiracion">
+
+        <label for="cvv">CVV:</label>
+        <input type="text" id="cvv" name="cvv">
+
         <input type="submit" value="Comprar">
     </form>
 {% endblock %}
