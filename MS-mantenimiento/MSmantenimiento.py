@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI, HTTPException
+import logging
 from pymongo import MongoClient
 
 #app name
