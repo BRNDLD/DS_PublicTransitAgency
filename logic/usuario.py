@@ -2,6 +2,7 @@ import json
 import os
 import re
 
+
 class User:
     """
     Class representing a user in the system.
@@ -18,6 +19,7 @@ class User:
         """
         self.users, self.admin, self.historial = self.load_data()
 
+
     def load_data(self):
         """
         Load user, admin and historial data from JSON files.
@@ -33,6 +35,7 @@ class User:
             historial = json.load(historial_file)
         return users, admin, historial
 
+
     def save_data(self):
         """
         Save user, admin and historial data to JSON files.
@@ -43,6 +46,7 @@ class User:
             json.dump(self.admin, admin_file)
         with open(os.path.join("data", "historial.json"), 'w') as historial_file:
             json.dump(self.historial, historial_file)
+
 
     def authenticate(self, username, password):
         """
@@ -58,6 +62,7 @@ class User:
         return (username in self.users and self.users[username] == password) or \
                (username in self.admin and self.admin[username]['password'] == password)
 
+
     def validate_username(self, username):
         """
         Validate the username for registration.
@@ -70,6 +75,7 @@ class User:
         if len(username) < 6:
             return "El nombre de usuario debe tener al menos 6 caracteres."
         return None
+
 
     def validate_password(self, password):
         """
@@ -86,6 +92,7 @@ class User:
             return "La contraseña debe contener al menos un número."
         return None
 
+
     def validate_code(self, code):
         """
         Validate the code for registration.
@@ -100,6 +107,7 @@ class User:
         if code in self.admin:
             return "El código ya está en uso."
         return None
+
 
     def signup(self, username, password, confirm_password, code):
         """
@@ -145,7 +153,8 @@ class User:
             return "Registro exitoso. Ahora puedes iniciar sesión."
         else:
             return "Las contraseñas no coinciden."
-        
+
+
     def add_to_historial(self, username, servicio):
         """
         Add a service to the user's history.
@@ -155,16 +164,12 @@ class User:
         :param servicio: The service to add to the history.
         :type servicio: dict
         """
-        # Asegúrate de que el usuario existe
         if username not in self.users and username not in self.admin:
             return "El usuario no existe."
 
-        # Asegúrate de que el usuario tiene un historial
         if username not in self.historial:
             self.historial[username] = []
 
-        # Agrega el servicio al historial
         self.historial[username].append(servicio)
 
-        # Guarda los datos
         self.save_data()

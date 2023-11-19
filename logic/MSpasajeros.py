@@ -2,11 +2,24 @@ import json
 from logic.usuario import User
 
 class PasajeroController:
+    """
+    Controller for managing passengers.
+    """
+
+
     def __init__(self, users_file, historial_file, precios_file):
+        """
+        Initialize the controller with the given files.
+
+        :param users_file: The file containing user data.
+        :param historial_file: The file containing history data.
+        :param precios_file: The file containing price data.
+        """
         self.users_file = users_file
         self.historial_file = historial_file
         self.precios_file = precios_file
         self.users_data, self.historial_data, self.precios_data = self.load_data()
+
 
     def load_data(self):
         """
@@ -23,6 +36,7 @@ class PasajeroController:
             precios_data = json.load(precios_file)
         return users_data, historial_data, precios_data
 
+
     def save_data(self):
         """
         Save user, historial and precios data to JSON files.
@@ -34,48 +48,60 @@ class PasajeroController:
         with open(self.precios_file, 'w') as precios_file:
             json.dump(self.precios_data, precios_file)
 
-        try:
-            with open(users_file, "r") as users_json:
-                self.users_data = json.load(users_json)
-        except Exception as e:
-            print(f"Error cargando {users_file}: {e}")
-            self.users_data = {}
-
-        try:
-            with open(historial_file, "r") as historial_json:
-                self.historial_data = json.load(historial_json)
-        except Exception as e:
-            print(f"Error cargando {historial_file}: {e}")
-            self.historial_data = {}
-
-        try:
-            with open(precios_file, "r") as precios_json:
-                self.precios_data = json.load(precios_json)
-        except Exception as e:
-            print(f"Error cargando {precios_file}: {e}")
-            self.precios_data = {}
-
-        self.precios_file = precios_file
 
     def get_usernames(self):
+        """
+        Get all usernames.
+
+        :returns: List of usernames
+        :rtype: list
+        """
         return list(self.users_data.keys())
 
+
     def get_historial_by_username(self, username):
+        """
+        Get the history for a given username.
+
+        :param username: The username to get the history for.
+        :returns: The history for the given username.
+        :rtype: list
+        """
         return self.historial_data.get(username, [])
 
+
     def get_all_historial(self):
+        """
+        Get the history for all users.
+
+        :returns: The history for all users.
+        :rtype: dict
+        """
         return {username: self.get_historial_by_username(username) for username in self.get_usernames()}
 
+
     def get_precio_by_id(self, programacion_id):
-    # Buscar el servicio con el programacion_id dado
+        """
+        Get the price for a given programming id.
+
+        :param programacion_id: The programming id to get the price for.
+        :returns: The price for the given programming id.
+        :rtype: dict
+        """
         for servicio in self.precios_data.values():
             if servicio['id'] == programacion_id:
                 return servicio
-
-    # Si no se encuentra el servicio, devolver None
         return None
 
+
     def set_precio_by_id(self, programacion_id, precio, programacion):
+        """
+        Set the price for a given programming id.
+
+        :param programacion_id: The programming id to set the price for.
+        :param precio: The price to set.
+        :param programacion: The programming to set the price for.
+        """
         self.precios_data[str(programacion_id)] = {
             "id": programacion_id,
             "tipo": programacion["tipo"],
@@ -89,12 +115,19 @@ class PasajeroController:
         with open(self.precios_file, "w") as precios_json:
             json.dump(self.precios_data, precios_json)
 
+
     def delete_precio_by_id(self, programacion_id):
+        """
+        Delete the price for a given programming id.
+
+        :param programacion_id: The programming id to delete the price for.
+        """
         if str(programacion_id) in self.precios_data:
             del self.precios_data[str(programacion_id)]
 
             with open(self.precios_file, "w") as precios_json:
                 json.dump(self.precios_data, precios_json)
+
 
     def add_to_historial(self, username, servicio):
         """
@@ -105,16 +138,12 @@ class PasajeroController:
         :param servicio: The service to add to the history.
         :type servicio: dict
         """
-        # Asegúrate de que el usuario existe
         if username not in self.users_data:
             return "El usuario no existe."
 
-        # Asegúrate de que el usuario tiene un historial
         if username not in self.historial_data:
             self.historial_data[username] = []
 
-        # Agrega el servicio al historial
         self.historial_data[username].append(servicio)
 
-        # Guarda los datos
         self.save_data()
