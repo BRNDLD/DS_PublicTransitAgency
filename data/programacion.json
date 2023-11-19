@@ -1,26 +1,34 @@
 [
     {
         "id": 1,
-        "tipo": "privado",
-        "placa_vehiculo": "098",
-        "horario": "14:02",
-        "vehiculo": "privado - 098",
-        "ruta": "x106"
-    },
-    {
-        "id": 2,
-        "tipo": "taxis",
+        "tipo": "bus",
         "placa_vehiculo": "123",
-        "horario": "14:00",
-        "vehiculo": "taxi - 123",
-        "ruta": "x103"
+        "horario": "13:02",
+        "ruta": "X-103",
+        "vehiculo": "bus - 123"
     },
     {
         "id": 3,
-        "tipo": "taxis",
-        "placa_vehiculo": "124",
-        "horario": "4:00",
-        "vehiculo": "taxi - 124",
-        "ruta": "x103"
+        "tipo": "privado",
+        "placa_vehiculo": "098",
+        "horario": "12:02",
+        "ruta": "X-102",
+        "vehiculo": "privado - 098"
+    },
+    {
+        "id": 4,
+        "tipo": "adaptado",
+        "placa_vehiculo": "112",
+        "horario": "11:11",
+        "ruta": "x-101",
+        "vehiculo": "adaptado - 112"
+    },
+    {
+        "id": 4,
+        "tipo": "tren",
+        "placa_vehiculo": "435",
+        "horario": "14:22",
+        "ruta": "X-103",
+        "vehiculo": "tren - 435"
     }
 ]

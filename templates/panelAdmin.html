@@ -101,15 +101,14 @@
         </h1>
         <div class="buttons">
             <a href="" class="button">Modificar Rutas</a>
-            <a href="" class="button">Modificar Precios</a>
+            <a href="{{ url_for('modificarPrecios') }}" class="button">Modificar Precios</a>
             <a href="https://ptamantenimiento.onrender.com/" class="button">Estado de Vehículos</a>
+            <a href="{{ url_for('pasajeros') }}" class="button">Lista de Usuarios</a>
         </div>
         <div class="user-info">
             <div class="dropdown">
                 <button class="dropdown-button">{{ admin_name }}</button>
                 <div class="dropdown-content">
-                    <a href="" class="dropdown-button">Perfil</a>
-                    <a href="{{ url_for('pasajeros') }}" class="dropdown-button">Lista de Usuarios</a>
                     <a href="{{ url_for('login') }}" class="dropdown-button logout-button">Cerrar Sesión</a>
                 </div>
             </div>

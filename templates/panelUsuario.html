@@ -102,12 +102,12 @@
         <div class="buttons">
             <a href="{{ url_for('rutas') }}" class="button">Rutas</a>
             <a href="" class="button">Precios</a>
+            <a href="" class="dropdown-button">Historial</a>
         </div>
         <div class="user-info">
             <div class="dropdown">
                 <button class="dropdown-button">{{ user_name }}</button>
                 <div class="dropdown-content">
-                    <a href="" class="dropdown-button">Perfil</a>
                     <a href="{{ url_for('login') }}" class="dropdown-button logout-button">Cerrar Sesión</a>
                 </div>
             </div>

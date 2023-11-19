@@ -1,4 +1,5 @@
 import os, json, uvicorn
+from fastapi.responses import RedirectResponse
 from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -9,7 +10,7 @@ from logic.MSpasajeros import PasajeroController
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-pasajero_controller = PasajeroController("data/users.json", "data/historial.json")
+pasajero_controller = PasajeroController("data/users.json", "data/historial.json", "data/precios.json")
 
 # Leer el archivo programacion.json
 with open("data/programacion.json", "r") as json_file:
@@ -83,6 +84,29 @@ async def pasajero_details(request: Request, username: str):
 async def rutas(request: Request):
     tipos_de_vehiculos = set(item["tipo"] for item in programacion)
     return templates.TemplateResponse("rutas.html", {"request": request, "programacion": programacion, "tipos_de_vehiculos": tipos_de_vehiculos})
+
+# Nueva ruta para la modificación de precios
+@app.get("/admin/modificarPrecios", response_model=dict)
+async def modificarPrecios(request: Request):
+    return templates.TemplateResponse("modificarPrecios.html", {"request": request, "programacion": programacion, "pasajero_controller": pasajero_controller, "precios_data": pasajero_controller.precios_data})
+
+@app.post("/admin/modificarPrecios")
+async def modificar_precios(request: Request, precio: float = Form(...)):
+    return templates.TemplateResponse("modificarPrecios.html", {"request": request, "programacion": programacion, "pasajero_controller": pasajero_controller, "precios_data": pasajero_controller.precios_data})
+
+@app.post("/admin/modificarPrecios/{programacion_id}")
+async def guardar_precio(request: Request, programacion_id: int, precio: float = Form(...)):
+    global programacion
+    programacion_item = next((item for item in programacion if item["id"] == programacion_id), None)
+    if not programacion_item:
+        raise HTTPException(status_code=404, detail="Programación no encontrada")
+    pasajero_controller.set_precio_by_id(programacion_id, precio, programacion_item)
+    return RedirectResponse(url="/admin/modificarPrecios")
+
+@app.get("/admin/modificarPrecios/{programacion_id}/eliminar")
+async def eliminar_precio(request: Request, programacion_id: int):
+    pasajero_controller.delete_precio_by_id(programacion_id)
+    return RedirectResponse(url="/admin/modificarPrecios")
 
 @app.get("/about")
 async def about(request: Request):
