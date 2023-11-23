@@ -1,52 +1,18 @@
-import json
 from logic.usuario import User
+from logic.db import DbController
 
 class PasajeroController:
     """
-    Controller for managing passengers.
+    Controlador para gestionar pasajeros.
     """
 
 
-    def __init__(self, users_file, historial_file, precios_file):
+    def __init__(self, db_controller):
         """
-        Initialize the controller with the given files.
-
-        :param users_file: The file containing user data.
-        :param historial_file: The file containing history data.
-        :param precios_file: The file containing price data.
+        Inicializa el controlador con los archivos dados.
         """
-        self.users_file = users_file
-        self.historial_file = historial_file
-        self.precios_file = precios_file
-        self.users_data, self.historial_data, self.precios_data = self.load_data()
-
-
-    def load_data(self):
-        """
-        Load user, historial and precios data from JSON files.
-
-        :returns: Tuple containing user, historial and precios data
-        :rtype: Tuple[dict, dict, dict]
-        """
-        with open(self.users_file, 'r') as users_file:
-            users_data = json.load(users_file)
-        with open(self.historial_file, 'r') as historial_file:
-            historial_data = json.load(historial_file)
-        with open(self.precios_file, 'r') as precios_file:
-            precios_data = json.load(precios_file)
-        return users_data, historial_data, precios_data
-
-
-    def save_data(self):
-        """
-        Save user, historial and precios data to JSON files.
-        """
-        with open(self.users_file, 'w') as users_file:
-            json.dump(self.users_data, users_file)
-        with open(self.historial_file, 'w') as historial_file:
-            json.dump(self.historial_data, historial_file)
-        with open(self.precios_file, 'w') as precios_file:
-            json.dump(self.precios_data, precios_file)
+        self.db_controller = db_controller
+        self.users_data, self.historial_data, self.precios_data = self.db_controller.load_data()
 
 
     def get_usernames(self):
@@ -56,7 +22,7 @@ class PasajeroController:
         :returns: List of usernames
         :rtype: list
         """
-        return list(self.users_data.keys())
+        return [user['username'] for user in self.users_data]
 
 
     def get_historial_by_username(self, username):
@@ -67,7 +33,7 @@ class PasajeroController:
         :returns: The history for the given username.
         :rtype: list
         """
-        return self.historial_data.get(username, [])
+        return [historial for historial in self.historial_data if historial['username'] == username]
 
 
     def get_all_historial(self):
@@ -88,7 +54,7 @@ class PasajeroController:
         :returns: The price for the given programming id.
         :rtype: dict
         """
-        for servicio in self.precios_data.values():
+        for servicio in self.precios_data:
             if servicio['id'] == programacion_id:
                 return servicio
         return None
@@ -102,7 +68,7 @@ class PasajeroController:
         :param precio: The price to set.
         :param programacion: The programming to set the price for.
         """
-        self.precios_data[str(programacion_id)] = {
+        self.precios_data.append({
             "id": programacion_id,
             "tipo": programacion["tipo"],
             "placa_vehiculo": programacion["placa_vehiculo"],
@@ -110,10 +76,8 @@ class PasajeroController:
             "vehiculo": programacion["vehiculo"],
             "ruta": programacion["ruta"],
             "precio": precio
-        }
-
-        with open(self.precios_file, "w") as precios_json:
-            json.dump(self.precios_data, precios_json)
+        })
+        self.db_controller.precios_collection.insert_one(self.precios_data[-1])
 
 
     def delete_precio_by_id(self, programacion_id):
@@ -122,28 +86,25 @@ class PasajeroController:
 
         :param programacion_id: The programming id to delete the price for.
         """
-        if str(programacion_id) in self.precios_data:
-            del self.precios_data[str(programacion_id)]
-
-            with open(self.precios_file, "w") as precios_json:
-                json.dump(self.precios_data, precios_json)
+        self.precios_data = [precio for precio in self.precios_data if precio['id'] != programacion_id]
+        self.db_controller.precios_collection.delete_one({'id': programacion_id})
 
 
     def add_to_historial(self, username, servicio):
         """
-        Add a service to the user's history.
+        Agrega un servicio al historial del usuario.
 
-        :param username: The username of the user.
+        :param username: El nombre de usuario del usuario.
         :type username: str
-        :param servicio: The service to add to the history.
+        :param servicio: El servicio para agregar al historial.
         :type servicio: dict
         """
-        if username not in self.users_data:
+        user_exists = self.db_controller.users_collection.find_one({'username': username})
+        if not user_exists:
             return "El usuario no existe."
 
-        if username not in self.historial_data:
-            self.historial_data[username] = []
-
-        self.historial_data[username].append(servicio)
-
-        self.save_data()
+        self.historial_data.append({
+            'username': username,
+            'servicio': servicio
+        })
+        self.db_controller.historial_collection.insert_one(self.historial_data[-1])
