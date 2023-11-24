@@ -27,12 +27,13 @@ async def login(request: Request):
 
 @app.post("/login")
 async def login_post(request: Request, username: str = Form(...), password: str = Form(...), code: str = Form(None)):
-    if code:
-        if username in user_manager.admin and user_manager.admin[username]["password"] == password and user_manager.admin[username]["code"] == code:
-            return templates.TemplateResponse("panelAdmin.html", {"request": request, "admin_name": username})
-    else:
-        if username in user_manager.users and user_manager.users[username] == password:
-            return templates.TemplateResponse("panelUsuario.html", {"request": request, "user_name": username})
+    user = db_controller.users_collection.find_one({"username": username, "password": password})
+    if user:
+        return templates.TemplateResponse("panelUsuario.html", {"request": request, "user_name": username})
+
+    admin = db_controller.admin_collection.find_one({"username": username, "password": password, "code": code})
+    if admin:
+        return templates.TemplateResponse("panelAdmin.html", {"request": request, "admin_name": username})
 
     error = "Credenciales incorrectas. Por favor, verifique sus datos e intente nuevamente."
     return templates.TemplateResponse("login.html", {"request": request, "error": error})
@@ -42,8 +43,8 @@ async def signup(request: Request):
     return templates.TemplateResponse("signup.html", {"request": request, "error": None, "success": None})
 
 @app.post("/signup")
-async def signup_post(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...), code: str = Form(None)):
-    error = user_manager.signup(username, password, confirm_password, code)
+async def signup_post(request: Request, username: str = Form(...), password: str = Form(...), confirm_password: str = Form(...)):
+    error = user_manager.signup(username, password, confirm_password)
     if error:
         return templates.TemplateResponse("signup.html", {"request": request, "error": error, "success": None})
     return templates.TemplateResponse("signup.html", {"request": request, "error": None, "success": "Registro exitoso. Ahora puedes iniciar sesión."})
