@@ -1,3 +1,4 @@
+from bson import ObjectId
 from logic.usuario import User
 from logic.db import DbController
 
@@ -17,7 +18,7 @@ class PasajeroController:
 
     def get_precio_by_id(self, programacion_id: str) -> dict:
         for servicio in self.precios_data:
-            if servicio['_id']['$oid'] == programacion_id:
+            if str(servicio['_id']) == programacion_id:
                 return servicio
         return None
 
@@ -25,20 +26,20 @@ class PasajeroController:
         return self.precios_data
 
     def set_precio_by_id(self, programacion_id: str, precio: float, programacion: dict):
-        self.precios_data.append({
-            "_id": {"$oid": programacion_id},
-            "tipo": programacion["tipo"],
-            "placa_vehiculo": programacion["placa_vehiculo"],
-            "horario": programacion["horario"],
-            "vehiculo": programacion["vehiculo"],
-            "ruta": programacion["ruta"],
-            "precio": precio
-        })
-        self.db_controller.precios_collection.insert_one(self.precios_data[-1])
-
+        precio_existente = self.get_precio_by_id(programacion_id)
+        if precio_existente:
+            precio_existente.update(programacion)
+            precio_existente['precio'] = precio
+            self.db_controller.update_precio_by_id(programacion_id, precio_existente)
+        else:
+            programacion['_id'] = ObjectId(programacion_id)
+            programacion['precio'] = precio
+            self.precios_data.append(programacion)
+            self.db_controller.precios_collection.insert_one(programacion)
+            
     def delete_precio_by_id(self, programacion_id: str):
-        self.precios_data = [precio for precio in self.precios_data if precio['_id']['$oid'] != programacion_id]
-        self.db_controller.precios_collection.delete_one({'_id': {'$oid': programacion_id}})
+        self.precios_data = [precio for precio in self.precios_data if str(precio['_id']) != programacion_id]
+        self.db_controller.delete_precio_by_id(programacion_id)
 
     def add_to_historial(self, username: str, servicio: dict) -> str:
         user_exists = self.db_controller.users_collection.find_one({'username': username})
@@ -53,7 +54,11 @@ class PasajeroController:
                 "horario": servicio["horario"],
                 "vehiculo": servicio["vehiculo"],
                 "ruta": servicio["ruta"],
-                "precio": self.get_precio_by_id(servicio['_id']['$oid'])['precio']
+                "precio": self.get_precio_by_id(str(servicio['_id']))['precio']
             }
         })
         self.db_controller.historial_collection.insert_one(self.historial_data[-1])
+
+    def get_programacion_data(self) -> list:
+        return self.db_controller.get_programacion_data()
+    

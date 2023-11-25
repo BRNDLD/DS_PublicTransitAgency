@@ -1,5 +1,6 @@
 from typing import List, Tuple
 from pymongo import MongoClient
+from bson import ObjectId
 
 class DbController:
     def __init__(self):
@@ -33,4 +34,14 @@ class DbController:
 
     def get_programacion(self) -> List[dict]:
         return list(self.programacion_collection.find())
+    
+    def get_programacion_data(self, limit: int = 0) -> List[dict]:
+        return list(self.programacion_collection.find().limit(limit))
+
+    def update_precio_by_id(self, programacion_id: str, programacion: dict):
+        self.precios_collection.update_one({'_id': ObjectId(programacion_id)}, {'$set': programacion}, upsert=True)
+
+    def delete_precio_by_id(self, programacion_id: str):
+        self.precios_collection.delete_one({'_id': ObjectId(programacion_id)})
+
         

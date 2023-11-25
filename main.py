@@ -109,19 +109,25 @@ async def pasajero_details(request: Request, username: str):
 @app.get("/admin/modificarPrecios", response_model=dict)
 async def modificarPrecios(request: Request):
     precios_data = pasajero_controller.get_precios()
-    return templates.TemplateResponse("modificarPrecios.html", {"request": request, "precios_data": precios_data})
+    programacion_data = pasajero_controller.get_programacion_data()
+    for programacion in programacion_data:
+        precio = next((p['precio'] for p in precios_data if str(p['_id']) == str(programacion['_id'])), None)
+        programacion['precio'] = precio
+        programacion['_id'] = str(programacion['_id'])  
+    return templates.TemplateResponse("modificarPrecios.html", {"request": request, "precios_data": precios_data, "programacion_data": programacion_data})
 
 @app.post("/admin/modificarPrecios")
 async def modificar_precios(request: Request, precio: float = Form(...)):
-    return templates.TemplateResponse("modificarPrecios.html", {"request": request, "programacion": db_controller.get_programacion(), "precios_data": db_controller.get_precios_data()})
+    return templates.TemplateResponse("modificarPrecios.html", {"request": request, "programacion": pasajero_controller.get_programacion_data(), "precios_data": pasajero_controller.get_precios()})
 
 @app.post("/admin/modificarPrecios/{programacion_id}")
 async def guardar_precio(request: Request, programacion_id: str, precio: float = Form(...)):
-    programacion_item = pasajero_controller.get_programacion_item_by_id(programacion_id)
-    if not programacion_item:
-        raise HTTPException(status_code=404, detail="Programación no encontrada")
+    programacion_data = pasajero_controller.get_programacion_data()
+    programacion_item = next((p for p in programacion_data if str(p['_id']) == programacion_id), None)
     pasajero_controller.set_precio_by_id(programacion_id, precio, programacion_item)
-    return RedirectResponse(url="/admin/modificarPrecios")
+    precios_data = pasajero_controller.get_precios()
+    programacion_data = pasajero_controller.get_programacion_data()
+    return templates.TemplateResponse("modificarPrecios.html", {"request": request, "precios_data": precios_data, "programacion_data": programacion_data})
 
 @app.get("/admin/modificarPrecios/{programacion_id}/eliminar")
 async def eliminar_precio(request: Request, programacion_id: str):
