@@ -38,9 +38,10 @@ class User:
         else:
             return "Las contraseñas no coinciden."
 
-    def add_to_historial(self, username: str, servicio: str) -> str:
+    def add_to_historial(self, username: str, viaje: dict) -> str:
         user_exists = self.db_controller.users_collection.find_one({'username': username})
         if not user_exists:
             return "El usuario no existe."
 
-        self.db_controller.add_to_historial(username, servicio)
+        self.db_controller.add_to_historial(username, viaje)
+        

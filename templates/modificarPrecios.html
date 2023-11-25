@@ -20,12 +20,12 @@
 
         h2 {
             text-align: center;
+            color: orange;
         }
     </style>
 
-    <h2 style="color: orange;">Modificar Precios</h2>
+    <h2>Modificar Precios</h2>
     <table border="1">
-        <!-- Primera tabla con la programación -->
         <thead>
             <tr>
                 <th>ID</th>
@@ -34,23 +34,24 @@
                 <th>Horario</th>
                 <th>Ruta</th>
                 <th>Precio</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            {% for item in programacion %}
+            {% for precio_data in precios_data %}
                 <tr>
-                    <td>{{ item.id }}</td>
-                    <td>{{ item.tipo }}</td>
-                    <td>{{ item.placa_vehiculo }}</td>
-                    <td>{{ item.horario }}</td>
-                    <td>{{ item.ruta }}</td>
+                    <td>{{ precio_data.id }}</td>
+                    <td>{{ precio_data.tipo }}</td>
+                    <td>{{ precio_data.placa_vehiculo }}</td>
+                    <td>{{ precio_data.horario }}</td>
+                    <td>{{ precio_data.ruta }}</td>
                     <td>
-                        <form method="post" action="/admin/modificarPrecios/{{ item.id }}">
-                            <input type="number" step="0.01" name="precio" value="{{ pasajero_controller.get_precio_by_id(item.id) }}">
+                        <form method="post" action="/admin/modificarPrecios/{{ precio_data.id }}">
+                            <input type="number" step="0.01" name="precio" value="{{ precio_data.precio }}">
                             <input type="submit" value="Guardar">
                         </form>
                     </td>
-                    <td></td> 
+                    <td><a href="/admin/modificarPrecios/{{ precio_data.id }}/eliminar">Eliminar</a></td>
                 </tr>
             {% endfor %}
         </tbody>

@@ -28,7 +28,6 @@
     <table border="1">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Tipo</th>
                 <th>Placa Vehículo</th>
                 <th>Horario</th>
@@ -38,9 +37,8 @@
             </tr>
         </thead>
         <tbody>
-            {% for _, precio_data in precios_data.items() %}
+            {% for precio_data in precios_data %}
                 <tr>
-                    <td>{{ precio_data.id }}</td>
                     <td>{{ precio_data.tipo }}</td>
                     <td>{{ precio_data.placa_vehiculo }}</td>
                     <td>{{ precio_data.horario }}</td>

@@ -2,74 +2,31 @@ from logic.usuario import User
 from logic.db import DbController
 
 class PasajeroController:
-    """
-    Controlador para gestionar pasajeros.
-    """
-
-
-    def __init__(self, db_controller):
-        """
-        Inicializa el controlador con los archivos dados.
-        """
+    def __init__(self, db_controller: DbController):
         self.db_controller = db_controller
         self.users_data, self.historial_data, self.precios_data = self.db_controller.load_data()
 
-
-    def get_usernames(self):
-        """
-        Get all usernames.
-
-        :returns: List of usernames
-        :rtype: list
-        """
+    def get_usernames(self) -> list:
         return [user['username'] for user in self.users_data]
 
+    def get_historial_by_username(self, username: str) -> list:
+        return [historial for historial in self.historial_data if historial['usuario'] == username]
 
-    def get_historial_by_username(self, username):
-        """
-        Get the history for a given username.
-
-        :param username: The username to get the history for.
-        :returns: The history for the given username.
-        :rtype: list
-        """
-        return [historial for historial in self.historial_data if historial['username'] == username]
-
-
-    def get_all_historial(self):
-        """
-        Get the history for all users.
-
-        :returns: The history for all users.
-        :rtype: dict
-        """
+    def get_all_historial(self) -> dict:
         return {username: self.get_historial_by_username(username) for username in self.get_usernames()}
 
-
-    def get_precio_by_id(self, programacion_id):
-        """
-        Get the price for a given programming id.
-
-        :param programacion_id: The programming id to get the price for.
-        :returns: The price for the given programming id.
-        :rtype: dict
-        """
+    def get_precio_by_id(self, programacion_id: str) -> dict:
         for servicio in self.precios_data:
-            if servicio['id'] == programacion_id:
+            if servicio['_id']['$oid'] == programacion_id:
                 return servicio
         return None
 
+    def get_precios(self) -> list:
+        return self.precios_data
 
-    def set_precio_by_id(self, programacion_id, precio, programacion):
-        """
-        Set the price for a given programming id.
-
-        :param programacion_id: The programming id to set the price for.
-        :param precio: The price to set.
-        :param programacion: The programming to set the price for.
-        """
+    def set_precio_by_id(self, programacion_id: str, precio: float, programacion: dict):
         self.precios_data.append({
-            "id": programacion_id,
+            "_id": {"$oid": programacion_id},
             "tipo": programacion["tipo"],
             "placa_vehiculo": programacion["placa_vehiculo"],
             "horario": programacion["horario"],
@@ -79,32 +36,24 @@ class PasajeroController:
         })
         self.db_controller.precios_collection.insert_one(self.precios_data[-1])
 
+    def delete_precio_by_id(self, programacion_id: str):
+        self.precios_data = [precio for precio in self.precios_data if precio['_id']['$oid'] != programacion_id]
+        self.db_controller.precios_collection.delete_one({'_id': {'$oid': programacion_id}})
 
-    def delete_precio_by_id(self, programacion_id):
-        """
-        Delete the price for a given programming id.
-
-        :param programacion_id: The programming id to delete the price for.
-        """
-        self.precios_data = [precio for precio in self.precios_data if precio['id'] != programacion_id]
-        self.db_controller.precios_collection.delete_one({'id': programacion_id})
-
-
-    def add_to_historial(self, username, servicio):
-        """
-        Agrega un servicio al historial del usuario.
-
-        :param username: El nombre de usuario del usuario.
-        :type username: str
-        :param servicio: El servicio para agregar al historial.
-        :type servicio: dict
-        """
+    def add_to_historial(self, username: str, servicio: dict) -> str:
         user_exists = self.db_controller.users_collection.find_one({'username': username})
         if not user_exists:
             return "El usuario no existe."
 
         self.historial_data.append({
-            'username': username,
-            'servicio': servicio
+            'usuario': username,
+            'viaje': {
+                "tipo": servicio["tipo"],
+                "placa_vehiculo": servicio["placa_vehiculo"],
+                "horario": servicio["horario"],
+                "vehiculo": servicio["vehiculo"],
+                "ruta": servicio["ruta"],
+                "precio": self.get_precio_by_id(servicio['_id']['$oid'])['precio']
+            }
         })
         self.db_controller.historial_collection.insert_one(self.historial_data[-1])

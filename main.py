@@ -61,17 +61,16 @@ async def historial(request: Request, username: str):
 
 @app.get("/usuario/{username}/precios", response_model=dict)
 async def precios(request: Request, username: str):
-    precios_data = db_controller.get_precios()
-
+    precios_data = pasajero_controller.get_precios()
     return templates.TemplateResponse("precios.html", {"request": request, "precios_data": precios_data, "user_name": username})
 
 @app.get("/usuario/{username}/pagos/{precio_id}")
-async def pagos(request: Request, username: str, precio_id: int):
+async def pagos(request: Request, username: str, precio_id: str):
     precio_data = pasajero_controller.get_precio_by_id(precio_id)
     return templates.TemplateResponse("pagos.html", {"request": request, "servicio": precio_data, "user_name": username})
 
-@app.post("/usuario/{username}/pagos/{precio_id}/comprar")
-async def comprar(request: Request, username: str, precio_id: int, password: str = Form(...), tarjeta: str = Form(...), fecha_expiracion: str = Form(...), cvv: str = Form(...)):
+@app.get("/usuario/{username}/pagos/{precio_id}/comprar")
+async def comprar(request: Request, username: str, precio_id: str, password: str = Form(...), tarjeta: str = Form(...), fecha_expiracion: str = Form(...), cvv: str = Form(...)):
     
     if user_manager.authenticate(username, password):
         servicio = pasajero_controller.get_precio_by_id(precio_id)
@@ -81,7 +80,8 @@ async def comprar(request: Request, username: str, precio_id: int, password: str
 
             return RedirectResponse(url=f"/usuario/{username}", status_code=303)
 
-    return RedirectResponse(url=f"/usuario/{username}/pagos/{precio_id}", status_code=303)
+    error = "Autenticación fallida. Por favor, verifique sus datos e intente nuevamente."
+    return templates.TemplateResponse("login.html", {"request": request, "error": error})
 
 @app.get("/usuario/{username}/rutas")
 async def rutas(request: Request, username: str):
@@ -95,8 +95,8 @@ async def admin(request: Request):
 
 @app.get("/admin/pasajeros", response_model=dict)
 async def pasajeros(request: Request):
-    all_historial = db_controller.get_all_historial()
-    usernames = db_controller.get_usernames()
+    all_historial = pasajero_controller.get_all_historial()
+    usernames = pasajero_controller.get_usernames()
     selected_username = request.query_params.get("username", "")
     historial = all_historial.get(selected_username, [])
     return templates.TemplateResponse("pasajeros.html", {"request": request, "usernames": usernames, "selected_username": selected_username, "historial": all_historial})
@@ -108,23 +108,24 @@ async def pasajero_details(request: Request, username: str):
 
 @app.get("/admin/modificarPrecios", response_model=dict)
 async def modificarPrecios(request: Request):
-    return templates.TemplateResponse("modificarPrecios.html", {"request": request, "programacion": db_controller.get_programacion(), "precios_data": db_controller.get_precios_data()})
+    precios_data = pasajero_controller.get_precios()
+    return templates.TemplateResponse("modificarPrecios.html", {"request": request, "precios_data": precios_data})
 
 @app.post("/admin/modificarPrecios")
 async def modificar_precios(request: Request, precio: float = Form(...)):
     return templates.TemplateResponse("modificarPrecios.html", {"request": request, "programacion": db_controller.get_programacion(), "precios_data": db_controller.get_precios_data()})
 
 @app.post("/admin/modificarPrecios/{programacion_id}")
-async def guardar_precio(request: Request, programacion_id: int, precio: float = Form(...)):
-    programacion_item = db_controller.get_programacion_item_by_id(programacion_id)
+async def guardar_precio(request: Request, programacion_id: str, precio: float = Form(...)):
+    programacion_item = pasajero_controller.get_programacion_item_by_id(programacion_id)
     if not programacion_item:
         raise HTTPException(status_code=404, detail="Programación no encontrada")
-    db_controller.set_precio_by_id(programacion_id, precio, programacion_item)
+    pasajero_controller.set_precio_by_id(programacion_id, precio, programacion_item)
     return RedirectResponse(url="/admin/modificarPrecios")
 
 @app.get("/admin/modificarPrecios/{programacion_id}/eliminar")
-async def eliminar_precio(request: Request, programacion_id: int):
-    db_controller.delete_precio_by_id(programacion_id)
+async def eliminar_precio(request: Request, programacion_id: str):
+    pasajero_controller.delete_precio_by_id(programacion_id)
     return RedirectResponse(url="/admin/modificarPrecios")
 
 @app.get("/about")

@@ -30,4 +30,7 @@ class DbController:
     def authenticate(self, username: str, password: str) -> bool:
         user = self.users_collection.find_one({"username": username, "password": password})
         return user is not None
-    
+
+    def get_programacion(self) -> List[dict]:
+        return list(self.programacion_collection.find())
+        

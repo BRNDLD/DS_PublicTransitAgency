@@ -42,8 +42,8 @@
         {% if historial %}
             {% for item in historial %}
                 <tr>
-                    <td>{{ item.tipo }} - {{ item.placa_vehiculo }} - {{ item.horario }} - {{ item.vehiculo }} - {{ item.ruta }}</td>
-                    <td>{{ item.precio }}</td>
+                    <td>{{ item.viaje.tipo }} - {{ item.viaje.placa_vehiculo }} - {{ item.viaje.horario }} - {{ item.viaje.vehiculo }} - {{ item.viaje.ruta }}</td>
+                    <td>{{ item.viaje.precio }}</td>
                 </tr>
             {% endfor %}
         {% else %}
