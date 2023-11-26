@@ -1,23 +1,44 @@
 from logic.db import DbController
 
+
 class User:
+    """
+    User class for handling user related operations.
+    """
+
+
     def __init__(self, db_controller: DbController):
+        """
+        Initialize User with a database controller.
+        """
         self.db_controller = db_controller
         self.users, self.admin, self.historial = self.db_controller.load_data()
 
+
     def validate_username(self, username: str) -> str:
+        """
+        Validate the username. It should be at least 6 characters long.
+        """
         if len(username) < 6:
             return "El nombre de usuario debe tener al menos 6 caracteres."
         return None
 
+
     def validate_password(self, password: str) -> str:
+        """
+        Validate the password. It should be at least 8 characters long and contain at least one digit.
+        """
         if len(password) < 8:
             return "La contraseña debe tener al menos 8 caracteres."
         if not any(char.isdigit() for char in password):
             return "La contraseña debe contener al menos un número."
         return None
 
+
     def signup(self, username: str, password: str, confirm_password: str) -> str:
+        """
+        Sign up a new user. The username should be unique and the password and confirm password should match.
+        """
         username_error = self.validate_username(username)
         password_error = self.validate_password(password)
 
@@ -38,14 +59,22 @@ class User:
         else:
             return "Las contraseñas no coinciden."
 
+
     def add_to_historial(self, username: str, viaje: dict) -> str:
+        """
+        Add a trip to the user's history.
+        """
         user_exists = self.db_controller.users_collection.find_one({'username': username})
         if not user_exists:
             return "El usuario no existe."
 
         self.db_controller.add_to_historial(username, viaje)
 
+
     def authenticate(self, username: str, password: str) -> bool:
+        """
+        Authenticate a user with a username and password.
+        """
         user = self.db_controller.users_collection.find_one({"username": username, "password": password})
         return user is not None
         

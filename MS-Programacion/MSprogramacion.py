@@ -13,22 +13,28 @@ import uvicorn
 app = FastAPI()
 templates = Jinja2Templates(directory="MS-Programacion/templates")
 
-# Conexión con la base de datos MongoDB
 client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/?tls=true")
 db = client["Vehiculos"]
 collection_programacion = db["Programacion"]
 collection_rutas = db["Rutas"]
-collection_vehiculos = db["vehiculos"]  # Agregado: Colección de vehículos
+collection_vehiculos = db["vehiculos"]
 
 
 class Service(BaseModel):
+    """
+    Service model.
+    """
     tipo: str
     vehiculo: str
     horario: str
     ruta: Optional[str] = None
 
+
 @app.post('/services/')
 async def create_service(service: Service):
+    """
+    Route for creating a service.
+    """
     try:
         tipo, placa_vehiculo = service.vehiculo.split(' - ')
         new_service = {
@@ -40,7 +46,6 @@ async def create_service(service: Service):
         }
         result = collection_programacion.insert_one(new_service)
 
-        # Agregar el nuevo servicio al resultado de la inserción para obtener el ID asignado por MongoDB
         new_service['_id'] = str(result.inserted_id)
 
         return new_service
@@ -48,13 +53,20 @@ async def create_service(service: Service):
         print(f"Error creating service: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 @app.get('/services/', response_model=List[Service])
 async def get_services():
+    """
+    Route for getting all services.
+    """
     return list(collection_programacion.find())
 
-# En la ruta correspondiente en tu código del servidor
+
 @app.get('/routes/', response_model=List[str])
 async def get_routes():
+    """
+    Route for getting all routes.
+    """
     try:
         routes = list(collection_rutas.find({}, {"_id": 0, "item": 1}))
         routes_list = [route["item"] for route in routes if "item" in route]
@@ -66,6 +78,9 @@ async def get_routes():
 
 @app.post('/routes/')
 async def add_route(new_route: dict):
+    """
+    Route for adding a new route.
+    """
     try:
         route = new_route.get("route")
         if route and route not in collection_rutas.distinct("item"):
@@ -75,8 +90,12 @@ async def add_route(new_route: dict):
         print(f"Error adding route: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 @app.delete('/services/{service_id}/')
 async def delete_service(service_id: str = Path(..., description="ID del servicio")):
+    """
+    Route for deleting a service.
+    """
     try:
         if service_id:
             result = collection_programacion.delete_one({"_id": service_id})
@@ -89,8 +108,12 @@ async def delete_service(service_id: str = Path(..., description="ID del servici
         print(f"Error deleting service: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 @app.delete('/routes/')
 async def delete_route(route: dict):
+    """
+    Route for deleting a route.
+    """
     try:
         route_to_delete = route.get("route")
         result = collection_rutas.delete_one({"item": route_to_delete})
@@ -101,23 +124,23 @@ async def delete_route(route: dict):
         print(f"Error deleting route: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-# Ruta para la página principal
+
 @app.get('/', response_class=HTMLResponse)
 async def read_index(request: Request):
+    """
+    Route for the main page.
+    """
     try:
-        # Cargar los datos desde MongoDB
         data = list(collection_programacion.find())
 
-        # Obtener todas las rutas directamente
         all_routes = list(collection_rutas.find({}, {"_id": 0, "item": 1}))
 
-        # Filtrar solo los documentos que tienen el campo "item"
         routes = [route["item"] for route in all_routes if "item" in route]
 
-        active_vehicles = list(collection_vehiculos.find({"estado": "activo"}))  # Obtener vehículos activos
+        active_vehicles = list(collection_vehiculos.find({"estado": "activo"}))
 
-        print("Routes from MongoDB:", routes)  # Para depurar, imprime las rutas en la consola del servidor
-        print("All routes from MongoDB:", all_routes)  # Imprime todos los documentos para depuración
+        print("Routes from MongoDB:", routes)
+        print("All routes from MongoDB:", all_routes)
 
         return templates.TemplateResponse(
             "programacion.html",
@@ -126,7 +149,4 @@ async def read_index(request: Request):
     except Exception as e:
         print(f"Error in read_index: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
-
-
 
