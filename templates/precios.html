@@ -44,7 +44,7 @@
                     <td>{{ precio_data.horario }}</td>
                     <td>{{ precio_data.ruta }}</td>
                     <td>{{ precio_data.precio }}</td>
-                    <td><a href="/usuario/{{ user_name }}/pagos/{{ precio_data.id }}">Comprar Ticket</a></td>
+                    <td><a href="/usuario/{{ user_name }}/pagos/{{ precio_data._id }}">Comprar Ticket</a></td>  <!-- Cambiar a _id -->
                 </tr>
             {% endfor %}
         </tbody>

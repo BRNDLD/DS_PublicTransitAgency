@@ -18,7 +18,7 @@ class PasajeroController:
 
     def get_precio_by_id(self, programacion_id: str) -> dict:
         for servicio in self.precios_data:
-            if str(servicio['_id']) == programacion_id:
+            if str(servicio['_id']) == str(programacion_id):  # Asegurarse de que ambos son cadenas
                 return servicio
         return None
 
@@ -47,6 +47,7 @@ class PasajeroController:
             return "El usuario no existe."
 
         self.historial_data.append({
+            '_id': ObjectId(),
             'usuario': username,
             'viaje': {
                 "tipo": servicio["tipo"],

@@ -69,7 +69,7 @@ async def pagos(request: Request, username: str, precio_id: str):
     precio_data = pasajero_controller.get_precio_by_id(precio_id)
     return templates.TemplateResponse("pagos.html", {"request": request, "servicio": precio_data, "user_name": username})
 
-@app.get("/usuario/{username}/pagos/{precio_id}/comprar")
+@app.post("/usuario/{username}/pagos/{precio_id}/comprar")
 async def comprar(request: Request, username: str, precio_id: str, password: str = Form(...), tarjeta: str = Form(...), fecha_expiracion: str = Form(...), cvv: str = Form(...)):
     
     if user_manager.authenticate(username, password):

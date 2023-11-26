@@ -44,4 +44,8 @@ class User:
             return "El usuario no existe."
 
         self.db_controller.add_to_historial(username, viaje)
+
+    def authenticate(self, username: str, password: str) -> bool:
+        user = self.db_controller.users_collection.find_one({"username": username, "password": password})
+        return user is not None
         

@@ -4,7 +4,7 @@ from bson import ObjectId
 
 class DbController:
     def __init__(self):
-        client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/?tls=true")
+        client = MongoClient("mongodb://localhost:27017")
         db = client["Vehiculos"]
 
         self.programacion_collection = db["Programacion"]
