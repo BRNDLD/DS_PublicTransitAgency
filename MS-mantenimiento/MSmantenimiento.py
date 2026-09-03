@@ -7,14 +7,18 @@ from fastapi import FastAPI, HTTPException
 import logging
 from pymongo import MongoClient
 import pymongo
+import os
 
 mantenimiento = FastAPI()
 
-client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/?tls=true")
+client = MongoClient(os.getenv("MONGODB_URI"))
 db = client["Vehiculos"]
 collection = db["vehiculos"]
 
-client = pymongo.MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/?tls=true", tlsCAFile=certifi.where())
+client = pymongo.MongoClient(
+    os.getenv("MONGODB_URI"),
+    tlsCAFile=certifi.where()
+)
 
 templates = Jinja2Templates(directory="MS-mantenimiento/templates")
 
