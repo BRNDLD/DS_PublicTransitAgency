@@ -1,6 +1,7 @@
 from typing import List, Tuple
 from pymongo import MongoClient
 from bson import ObjectId
+import os
 
 
 class DbController:
@@ -13,7 +14,7 @@ class DbController:
         """
         Initialize MongoDB client and collections.
         """
-        client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/?tls=true")
+        client = MongoClient(os.getenv("MONGODB_URI"))
         db = client["Vehiculos"]
 
         self.programacion_collection = db["Programacion"]
