@@ -9,11 +9,12 @@ from fastapi.encoders import jsonable_encoder
 from typing import List
 from fastapi import Path
 import uvicorn
+import os
 
 app = FastAPI()
 templates = Jinja2Templates(directory="MS-Programacion/templates")
 
-client = MongoClient("mongodb+srv://publictransit:qwerty32@pta.bueovsa.mongodb.net/?tls=true")
+client = MongoClient(os.getenv("MONGODB_URI"))
 db = client["Vehiculos"]
 collection_programacion = db["Programacion"]
 collection_rutas = db["Rutas"]
